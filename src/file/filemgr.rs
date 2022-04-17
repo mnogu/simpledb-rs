@@ -1,6 +1,7 @@
 use std::fs::{File, OpenOptions};
 use std::io::{Read, SeekFrom, Write};
 use std::path::Path;
+use std::sync::Mutex;
 use std::{io::Error, io::Seek};
 
 use super::blockid::BlockId;
@@ -23,7 +24,10 @@ impl FileMgr {
     }
 
     pub fn read(&self, blk: &BlockId, p: &mut Page) -> Result<(), Error> {
-        let mut f = self.get_file(blk.file_name())?;
+        let file = self.get_file(blk.file_name())?;
+        let m = Mutex::new(file);
+        let mut f = m.lock().unwrap();
+
         f.seek(SeekFrom::Start((blk.number() * self.blocksize) as u64))?;
         f.read_exact(&mut p.contents())?;
 
@@ -31,7 +35,10 @@ impl FileMgr {
     }
 
     pub fn write(&self, blk: &BlockId, p: &mut Page) -> Result<(), Error> {
-        let mut f = self.get_file(blk.file_name())?;
+        let file = self.get_file(blk.file_name())?;
+        let m = Mutex::new(file);
+        let mut f = m.lock().unwrap();
+
         f.seek(SeekFrom::Start((blk.number() * self.blocksize) as u64))?;
         f.write_all(p.contents())?;
         f.sync_all()?;
