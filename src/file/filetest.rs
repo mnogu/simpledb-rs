@@ -19,7 +19,9 @@ mod tests {
         let mut p2 = Page::new(fm.block_size());
         fm.read(&blk, &mut p2).unwrap();
 
-        println!("offset {} contains {}", pos2, p2.get_int(pos2));
-        println!("offset {} contains {}", pos1, p2.get_string(pos1).unwrap());
+        assert_eq!(105, pos2);
+        assert_eq!(345, p2.get_int(pos2));
+        assert_eq!(88, pos1);
+        assert_eq!("abcdefghijklm", p2.get_string(pos1).unwrap());
     }
 }
