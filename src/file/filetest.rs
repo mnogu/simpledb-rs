@@ -1,5 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
     use crate::*;
 
     #[test]
@@ -23,5 +25,7 @@ mod tests {
         assert_eq!(345, p2.get_int(pos2));
         assert_eq!(88, pos1);
         assert_eq!("abcdefghijklm", p2.get_string(pos1).unwrap());
+
+        fs::remove_dir_all("filetest").unwrap();
     }
 }
