@@ -2,11 +2,11 @@
 mod tests {
     use std::fs;
 
-    use crate::*;
+    use crate::{file::blockid::BlockId, *};
 
     #[test]
     fn filetest() {
-        let db = SimpleDB::new("filetest", 400, 8);
+        let db = SimpleDB::new("filetest", 400, 8).unwrap();
         let fm = db.file_mgr();
 
         let blk = BlockId::new("testfile", 2);

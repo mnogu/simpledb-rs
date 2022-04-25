@@ -11,6 +11,10 @@ impl Page {
         Page { bb: vec }
     }
 
+    pub fn new_with_vec(b: Vec<u8>) -> Page {
+        Page { bb: b }
+    }
+
     pub fn get_int(&self, offset: usize) -> i32 {
         let mut buf: [u8; 4] = [0; 4];
         buf.copy_from_slice(&self.bb[offset..offset + 4]);
@@ -22,8 +26,8 @@ impl Page {
     }
 
     pub fn get_bytes(&self, offset: usize) -> &[u8] {
-        let len = self.get_int(offset);
-        &self.bb[offset + 4..offset + 4 + len as usize]
+        let len = self.get_int(offset) as usize;
+        &self.bb[offset + 4..offset + 4 + len]
     }
 
     pub fn set_bytes(&mut self, offset: usize, b: &[u8]) {
@@ -46,7 +50,7 @@ impl Page {
         4 + strlen * bytes_per_char
     }
 
-    pub(in crate::file) fn contents(&mut self) -> &mut Vec<u8> {
+    pub(in crate) fn contents(&mut self) -> &mut Vec<u8> {
         &mut self.bb
     }
 }

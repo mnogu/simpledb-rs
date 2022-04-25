@@ -1,26 +1,54 @@
 mod file;
+mod log;
 mod server;
 
-use file::blockid::BlockId;
 use file::page::Page;
+use log::logmgr::LogMgr;
 use server::simpledb::SimpleDB;
 
 fn main() {
-    let db = SimpleDB::new("filetest", 400, 8);
-    let fm = db.file_mgr();
+    let mut db = SimpleDB::new("logtest", 400, 8).unwrap();
+    let lm = db.log_mgr();
 
-    let blk = BlockId::new("testfile", 2);
-    let mut p1 = Page::new(fm.block_size());
-    let pos1 = 88;
-    p1.set_string(pos1, "abcdefghijklm");
-    let size = Page::max_length("abcdefghijklm".len());
-    let pos2 = pos1 + size;
-    p1.set_int(pos2, 345);
-    fm.write(&blk, &mut p1).unwrap();
+    print_log_records(lm, "The initial empty log file:");
+    println!("done");
+    create_records(lm, 1, 35);
+    print_log_records(lm, "The log file now has these records:");
+    create_records(lm, 36, 70);
+    lm.flush(65).unwrap();
+    print_log_records(lm, "The log file now has these records:");
+}
 
-    let mut p2 = Page::new(fm.block_size());
-    fm.read(&blk, &mut p2).unwrap();
+fn print_log_records(lm: &mut LogMgr, msg: &str) {
+    println!("{}", msg);
+    let iter = lm.iterator().unwrap();
+    for rec in iter {
+        let p = Page::new_with_vec(rec);
+        let s = p.get_string(0).unwrap();
+        let npos = Page::max_length(s.len());
+        let val = p.get_int(npos);
+        println!("[{}, {}]", s, val);
+    }
+    println!();
+}
 
-    println!("offset {} contains {}", pos2, p2.get_int(pos2));
-    println!("offset {} contains {}", pos1, p2.get_string(pos1).unwrap());
+fn create_records(lm: &mut LogMgr, start: usize, end: usize) {
+    print!("Creating records: ");
+    for i in start..=end {
+        let s = format!("{}{}", "record", i);
+        let rec = create_log_record(s.as_str(), i + 100);
+        let lsn = lm.append(&rec).unwrap();
+        print!("{} ", lsn);
+    }
+    println!();
+}
+
+fn create_log_record(s: &str, n: usize) -> Vec<u8> {
+    let spos = 0;
+    let npos = Page::max_length(s.len());
+    let b: Vec<u8> = vec![0; npos + 4];
+    let mut p = Page::new_with_vec(b);
+    p.set_string(spos, s);
+    p.set_int(npos, n as i32);
+    p.contents().to_vec()
 }

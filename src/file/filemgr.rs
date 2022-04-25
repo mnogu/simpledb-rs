@@ -28,7 +28,9 @@ impl FileMgr {
         let m = Mutex::new(file);
         let mut f = m.lock().unwrap();
 
-        f.seek(SeekFrom::Start((blk.number() * self.blocksize) as u64))?;
+        f.seek(SeekFrom::Start(
+            (blk.number() as usize * self.blocksize) as u64,
+        ))?;
         f.read_exact(&mut p.contents())?;
 
         Ok(())
@@ -39,11 +41,36 @@ impl FileMgr {
         let m = Mutex::new(file);
         let mut f = m.lock().unwrap();
 
-        f.seek(SeekFrom::Start((blk.number() * self.blocksize) as u64))?;
+        f.seek(SeekFrom::Start(
+            (blk.number() as usize * self.blocksize) as u64,
+        ))?;
         f.write_all(p.contents())?;
         f.sync_all()?;
 
         Ok(())
+    }
+
+    pub fn append(&self, filename: &str) -> Result<BlockId, Error> {
+        let newblknum = self.length(filename)?;
+        let blk = BlockId::new(filename, newblknum as i32);
+        let b: Vec<u8> = vec![0; self.blocksize];
+
+        let file = self.get_file(blk.file_name())?;
+        let m = Mutex::new(file);
+        let mut f = m.lock().unwrap();
+
+        f.seek(SeekFrom::Start(
+            (blk.number() as usize * self.blocksize) as u64,
+        ))?;
+        f.write(&b)?;
+
+        Ok(blk)
+    }
+
+    pub fn length(&self, filename: &str) -> Result<usize, Error> {
+        let file = self.get_file(filename)?;
+        let metadata = file.metadata()?;
+        Ok(metadata.len() as usize / self.blocksize)
     }
 
     pub fn block_size(&self) -> usize {
@@ -56,7 +83,7 @@ impl FileMgr {
             .read(true)
             .write(true)
             .create(true)
-            .open(&filename)?;
+            .open(filename)?;
 
         Ok(file)
     }
