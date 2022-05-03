@@ -1,7 +1,15 @@
+use std::fmt::{Display, Formatter};
+
 #[derive(Clone, PartialEq)]
 pub struct BlockId {
     filename: String,
     blknum: i32,
+}
+
+impl Display for BlockId {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "[file {}, block {}]", self.filename, self.blknum)
+    }
 }
 
 impl BlockId {

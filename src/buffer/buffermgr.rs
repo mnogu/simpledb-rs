@@ -38,10 +38,11 @@ impl From<Error> for BufferAbortError {
 pub struct BufferMgr {
     bufferpool: Vec<Buffer>,
     num_available: usize,
+    max_time: u128,
 }
 
-fn waiting_too_long(starttime: SystemTime) -> Result<bool, SystemTimeError> {
-    Ok(SystemTime::now().duration_since(starttime)?.as_millis() > MAX_TIME)
+fn waiting_too_long(starttime: SystemTime, max_time: u128) -> Result<bool, SystemTimeError> {
+    Ok(SystemTime::now().duration_since(starttime)?.as_millis() > max_time)
 }
 
 impl BufferMgr {
@@ -54,7 +55,15 @@ impl BufferMgr {
         BufferMgr {
             bufferpool,
             num_available,
+            max_time: MAX_TIME,
         }
+    }
+
+    pub fn available(&self) -> usize {
+        let m = Mutex::new(self.num_available);
+        let num_available = m.lock().unwrap();
+
+        *num_available
     }
 
     pub fn unpin(&mut self, idx: usize) {
@@ -73,8 +82,8 @@ impl BufferMgr {
         let timestamp = m.lock().unwrap();
 
         let mut idx = self.try_to_pin(blk)?;
-        while idx.is_none() && !waiting_too_long(*timestamp)? {
-            park_timeout(Duration::from_millis(MAX_TIME as u64));
+        while idx.is_none() && !waiting_too_long(*timestamp, self.max_time)? {
+            park_timeout(Duration::from_millis(self.max_time as u64));
             idx = self.try_to_pin(blk)?;
         }
         match idx {
@@ -125,5 +134,9 @@ impl BufferMgr {
             }
         }
         None
+    }
+
+    pub fn set_max_time(&mut self, max_time: u128) {
+        self.max_time = max_time;
     }
 }
