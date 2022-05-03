@@ -15,7 +15,6 @@ mod tests {
         let n = p.get_int(80);
         p.set_int(80, n + 1);
         buff1.set_modified(1, 0);
-        println!("The new value is {}", n + 1);
         assert_eq!(1, n + 1);
         bm.unpin(idx1);
 
