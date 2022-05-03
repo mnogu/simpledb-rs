@@ -2,12 +2,12 @@
 mod tests {
     use std::{fs, iter::zip};
 
-    use crate::*;
+    use crate::{file::page::Page, log::logmgr::LogMgr, server::simpledb::SimpleDB};
 
     #[test]
     fn logtest() {
         let mut db = SimpleDB::new("logtest", 400, 8).unwrap();
-        let lm = db.log_mgr();
+        let lm = &mut db.log_mgr().borrow_mut();
 
         assert_log_records(lm, Vec::new());
         create_records(lm, 1, 35);

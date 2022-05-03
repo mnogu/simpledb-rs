@@ -28,10 +28,11 @@ impl FileMgr {
         let m = Mutex::new(file);
         let mut f = m.lock().unwrap();
 
-        f.seek(SeekFrom::Start(
-            (blk.number() as usize * self.blocksize) as u64,
-        ))?;
-        f.read_exact(&mut p.contents())?;
+        let pos = (blk.number() as usize * self.blocksize) as u64;
+        f.seek(SeekFrom::Start(pos))?;
+        if f.metadata()?.len() >= pos + p.contents().len() as u64 {
+            f.read_exact(&mut p.contents())?;
+        }
 
         Ok(())
     }

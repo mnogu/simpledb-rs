@@ -2,7 +2,10 @@
 mod tests {
     use std::fs;
 
-    use crate::{file::blockid::BlockId, *};
+    use crate::{
+        file::{blockid::BlockId, page::Page},
+        server::simpledb::SimpleDB,
+    };
 
     #[test]
     fn filetest() {

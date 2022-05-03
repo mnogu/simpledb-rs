@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct BlockId {
     filename: String,
     blknum: i32,

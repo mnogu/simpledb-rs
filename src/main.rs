@@ -1,54 +1,34 @@
+use file::blockid::BlockId;
+
+use crate::server::simpledb::SimpleDB;
+
+mod buffer;
 mod file;
 mod log;
 mod server;
 
-use file::page::Page;
-use log::logmgr::LogMgr;
-use server::simpledb::SimpleDB;
-
 fn main() {
-    let mut db = SimpleDB::new("logtest", 400, 8).unwrap();
-    let lm = db.log_mgr();
+    let mut db = SimpleDB::new("buffertest", 400, 3).unwrap();
+    let bm = db.buffer_mgr();
 
-    print_log_records(lm, "The initial empty log file:");
-    println!("done");
-    create_records(lm, 1, 35);
-    print_log_records(lm, "The log file now has these records:");
-    create_records(lm, 36, 70);
-    lm.flush(65).unwrap();
-    print_log_records(lm, "The log file now has these records:");
-}
+    let idx1 = bm.pin(&BlockId::new("testfile", 1)).unwrap();
+    let buff1 = bm.buffer(idx1);
+    let p = buff1.contents();
+    let n = p.get_int(80);
+    p.set_int(80, n + 1);
+    buff1.set_modified(1, 0);
+    println!("The new value is {}", n + 1);
+    bm.unpin(idx1);
 
-fn print_log_records(lm: &mut LogMgr, msg: &str) {
-    println!("{}", msg);
-    let iter = lm.iterator().unwrap();
-    for rec in iter {
-        let p = Page::new_with_vec(rec);
-        let s = p.get_string(0).unwrap();
-        let npos = Page::max_length(s.len());
-        let val = p.get_int(npos);
-        println!("[{}, {}]", s, val);
-    }
-    println!();
-}
+    let mut idx2 = bm.pin(&BlockId::new("testfile", 2)).unwrap();
+    bm.pin(&BlockId::new("testfile", 3)).unwrap();
+    bm.pin(&BlockId::new("testfile", 4)).unwrap();
 
-fn create_records(lm: &mut LogMgr, start: usize, end: usize) {
-    print!("Creating records: ");
-    for i in start..=end {
-        let s = format!("{}{}", "record", i);
-        let rec = create_log_record(s.as_str(), i + 100);
-        let lsn = lm.append(&rec).unwrap();
-        print!("{} ", lsn);
-    }
-    println!();
-}
-
-fn create_log_record(s: &str, n: usize) -> Vec<u8> {
-    let spos = 0;
-    let npos = Page::max_length(s.len());
-    let b: Vec<u8> = vec![0; npos + 4];
-    let mut p = Page::new_with_vec(b);
-    p.set_string(spos, s);
-    p.set_int(npos, n as i32);
-    p.contents().to_vec()
+    bm.unpin(idx2);
+    idx2 = bm.pin(&BlockId::new("testfile", 1)).unwrap();
+    let buff2 = bm.buffer(idx2);
+    let p2 = buff2.contents();
+    p2.set_int(80, 9999);
+    buff2.set_modified(1, 0);
+    bm.unpin(idx2);
 }
