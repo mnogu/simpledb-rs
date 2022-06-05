@@ -11,7 +11,7 @@ impl Page {
         Page { bb: vec }
     }
 
-    pub fn new_with_vec(b: Vec<u8>) -> Page {
+    pub fn with_vec(b: Vec<u8>) -> Page {
         Page { bb: b }
     }
 

@@ -69,7 +69,7 @@ impl SetIntRecord {
         let vpos = opos + bytes;
         let mut rec = Vec::with_capacity(vpos + bytes);
         rec.resize(rec.capacity(), 0);
-        let mut p = Page::new_with_vec(rec);
+        let mut p = Page::with_vec(rec);
         p.set_int(0, Op::SetInt as i32);
         p.set_int(tpos, txnum as i32);
         p.set_string(fpos, blk.file_name());

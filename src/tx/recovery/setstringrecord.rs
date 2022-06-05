@@ -70,7 +70,7 @@ impl SetStringRecord {
         let reclen = vpos + Page::max_length(val.len());
         let mut rec = Vec::with_capacity(reclen);
         rec.resize(rec.capacity(), 0);
-        let mut p = Page::new_with_vec(rec);
+        let mut p = Page::with_vec(rec);
         p.set_int(0, Op::SetString as i32);
         p.set_int(tpos, txnum as i32);
         p.set_string(fpos, blk.file_name());

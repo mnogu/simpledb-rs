@@ -23,7 +23,7 @@ fn append_new_block(fm: &FileMgr, logpage: &mut Page, logfile: &str) -> Result<B
 impl LogMgr {
     pub fn new(fm: Rc<FileMgr>, logfile: &str) -> Result<LogMgr, Error> {
         let b = vec![0; fm.block_size()];
-        let mut logpage = Page::new_with_vec(b);
+        let mut logpage = Page::with_vec(b);
         let logsize = fm.length(logfile)?;
         let currentblk = if logsize == 0 {
             append_new_block(&fm, &mut logpage, logfile)?

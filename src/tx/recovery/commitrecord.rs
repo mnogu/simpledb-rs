@@ -39,7 +39,7 @@ impl CommitRecord {
         let bytes = 4;
         let mut rec = Vec::with_capacity(2 * bytes);
         rec.resize(rec.capacity(), 0);
-        let mut p = Page::new_with_vec(rec);
+        let mut p = Page::with_vec(rec);
         p.set_int(0, Op::Commit as i32);
         p.set_int(bytes, txnum as i32);
         lm.append(p.contents())

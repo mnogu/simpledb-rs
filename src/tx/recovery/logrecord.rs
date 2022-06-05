@@ -43,7 +43,7 @@ impl TryFrom<i32> for Op {
 }
 
 pub fn create_log_record(bytes: Vec<u8>) -> Result<Box<dyn LogRecord>, TransactionError> {
-    let p = Page::new_with_vec(bytes);
+    let p = Page::with_vec(bytes);
     match (p.get_int(0)).try_into() {
         Ok(Op::CheckPoint) => Ok(Box::new(CheckPointRecord::new())),
         Ok(Op::Start) => Ok(Box::new(StartRecord::new(p))),

@@ -20,7 +20,7 @@ pub struct LogIterator {
 impl LogIterator {
     pub fn new(fm: Rc<FileMgr>, blk: &BlockId) -> Result<LogIterator, Error> {
         let b: Vec<u8> = vec![0; fm.block_size()];
-        let mut p = Page::new_with_vec(b);
+        let mut p = Page::with_vec(b);
         let (boundary, currentpos) = move_to_block(fm.clone(), blk, &mut p)?;
         Ok(LogIterator {
             fm,
