@@ -1,27 +1,31 @@
 #[cfg(test)]
 mod tests {
-    use std::{cell::RefMut, fs, iter::zip};
+    use std::{
+        cell::RefMut,
+        fs,
+        iter::zip,
+        sync::{Arc, Mutex},
+    };
 
     use crate::{file::page::Page, log::logmgr::LogMgr, server::simpledb::SimpleDB};
 
     #[test]
     fn logtest() {
         let mut db = SimpleDB::new("logtest", 400, 8).unwrap();
-        let m = db.log_mgr();
-        let mut lm = m.borrow_mut();
+        let lm = db.log_mgr();
 
-        assert_log_records(&mut lm, Vec::new());
-        create_records(&mut lm, 1, 35);
-        assert_log_records(&mut lm, (1..=35).rev().collect());
-        create_records(&mut lm, 36, 70);
-        lm.flush(65).unwrap();
-        assert_log_records(&mut lm, (1..=70).rev().collect());
+        assert_log_records(lm.clone(), Vec::new());
+        create_records(lm.clone(), 1, 35);
+        assert_log_records(lm.clone(), (1..=35).rev().collect());
+        create_records(lm.clone(), 36, 70);
+        lm.lock().unwrap().flush(65).unwrap();
+        assert_log_records(lm, (1..=70).rev().collect());
 
         fs::remove_dir_all("logtest").unwrap();
     }
 
-    fn assert_log_records(lm: &mut RefMut<LogMgr>, expected: Vec<i32>) {
-        let iter = lm.iterator().unwrap();
+    fn assert_log_records(lm: Arc<Mutex<LogMgr>>, expected: Vec<i32>) {
+        let iter = lm.lock().unwrap().iterator().unwrap();
         for (rec, exp) in zip(iter, expected) {
             let p = Page::with_vec(rec);
             let s = p.get_string(0).unwrap();
@@ -33,11 +37,11 @@ mod tests {
         }
     }
 
-    fn create_records(lm: &mut RefMut<LogMgr>, start: usize, end: usize) {
+    fn create_records(lm: Arc<Mutex<LogMgr>>, start: usize, end: usize) {
         for i in start..=end {
             let s = format!("{}{}", "record", i);
             let rec = create_log_record(s.as_str(), i + 100);
-            let lsn = lm.append(&rec).unwrap();
+            let lsn = lm.lock().unwrap().append(&rec).unwrap();
             assert_eq!(i, lsn);
         }
     }

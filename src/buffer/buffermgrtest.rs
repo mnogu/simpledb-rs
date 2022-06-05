@@ -8,7 +8,7 @@ mod tests {
     fn buffermgrtest() {
         let mut db = SimpleDB::new("buffermgrtest", 400, 3).unwrap();
         let m = db.buffer_mgr();
-        let mut bm = m.borrow_mut();
+        let mut bm = m.lock().unwrap();
         bm.set_max_time(1);
 
         let mut buff = Vec::with_capacity(6);

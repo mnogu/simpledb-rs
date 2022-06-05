@@ -1,11 +1,14 @@
-use std::{io::Error, rc::Rc, sync::Mutex};
+use std::{
+    io::Error,
+    sync::{Arc, Mutex},
+};
 
 use crate::file::{blockid::BlockId, filemgr::FileMgr, page::Page};
 
 use super::logiterator::LogIterator;
 
 pub struct LogMgr {
-    fm: Rc<FileMgr>,
+    fm: Arc<FileMgr>,
     logfile: String,
     logpage: Page,
     currentblk: BlockId,
@@ -21,7 +24,7 @@ fn append_new_block(fm: &FileMgr, logpage: &mut Page, logfile: &str) -> Result<B
 }
 
 impl LogMgr {
-    pub fn new(fm: Rc<FileMgr>, logfile: &str) -> Result<LogMgr, Error> {
+    pub fn new(fm: Arc<FileMgr>, logfile: &str) -> Result<LogMgr, Error> {
         let b = vec![0; fm.block_size()];
         let mut logpage = Page::with_vec(b);
         let logsize = fm.length(logfile)?;

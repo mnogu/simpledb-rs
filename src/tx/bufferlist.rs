@@ -1,4 +1,7 @@
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     buffer::buffermgr::{AbortError, BufferMgr},
@@ -6,13 +9,13 @@ use crate::{
 };
 
 pub struct BufferList {
-    bm: Rc<RefCell<BufferMgr>>,
+    bm: Arc<Mutex<BufferMgr>>,
     buffers: HashMap<BlockId, usize>,
     pins: Vec<BlockId>,
 }
 
 impl BufferList {
-    pub fn new(bm: Rc<RefCell<BufferMgr>>) -> BufferList {
+    pub fn new(bm: Arc<Mutex<BufferMgr>>) -> BufferList {
         BufferList {
             bm,
             buffers: HashMap::new(),
@@ -29,7 +32,7 @@ impl BufferList {
     }
 
     pub(in crate::tx) fn pin(&mut self, blk: &BlockId) -> Result<(), AbortError> {
-        let idx = self.bm.borrow_mut().pin(&blk)?;
+        let idx = self.bm.lock().unwrap().pin(&blk)?;
         self.buffers.insert(blk.clone(), idx);
         self.pins.push(blk.clone());
         Ok(())
@@ -38,7 +41,7 @@ impl BufferList {
     pub(in crate::tx) fn unpin(&mut self, blk: &BlockId) -> Result<(), AbortError> {
         let idx = self.buffers.get(blk);
         if let Some(idx) = idx {
-            self.bm.borrow_mut().unpin(*idx);
+            self.bm.lock().unwrap().unpin(*idx);
             if !self.pins.contains(blk) {
                 self.buffers.remove(blk);
             }
@@ -50,7 +53,7 @@ impl BufferList {
     pub(in crate::tx) fn unpin_all(&mut self) {
         for blk in &self.pins {
             if let Some(idx) = self.buffers.get(&blk) {
-                self.bm.borrow_mut().unpin(*idx);
+                self.bm.lock().unwrap().unpin(*idx);
             }
         }
         self.buffers.clear();

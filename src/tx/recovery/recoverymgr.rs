@@ -1,4 +1,8 @@
-use std::{cell::RefCell, io::Error, rc::Rc, string::FromUtf8Error};
+use std::{
+    io::Error,
+    string::FromUtf8Error,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     buffer::{buffer::Buffer, buffermgr::BufferMgr},
@@ -30,24 +34,24 @@ impl From<FromUtf8Error> for RecoveryError {
 }
 
 pub struct RecoveryMgr {
-    lm: Rc<RefCell<LogMgr>>,
-    bm: Rc<RefCell<BufferMgr>>,
+    lm: Arc<Mutex<LogMgr>>,
+    bm: Arc<Mutex<BufferMgr>>,
     txnum: usize,
 }
 
 impl RecoveryMgr {
     pub fn new(
         txnum: usize,
-        lm: Rc<RefCell<LogMgr>>,
-        bm: Rc<RefCell<BufferMgr>>,
+        lm: Arc<Mutex<LogMgr>>,
+        bm: Arc<Mutex<BufferMgr>>,
     ) -> Result<RecoveryMgr, Error> {
-        StartRecord::write_to_log(&mut lm.borrow_mut(), txnum)?;
+        StartRecord::write_to_log(&mut lm.lock().unwrap(), txnum)?;
         Ok(RecoveryMgr { lm, bm, txnum })
     }
 
     pub fn commit(&self) -> Result<(), Error> {
-        self.bm.borrow_mut().flush_all(self.txnum)?;
-        let mut lm = self.lm.borrow_mut();
+        self.bm.lock().unwrap().flush_all(self.txnum)?;
+        let mut lm = self.lm.lock().unwrap();
         let lsn = CommitRecord::write_to_log(&mut lm, self.txnum)?;
         lm.flush(lsn)?;
         Ok(())
@@ -63,7 +67,7 @@ impl RecoveryMgr {
         let blk = buff.block();
         if let Some(blk) = blk {
             let lsn = SetIntRecord::write_to_log(
-                &mut self.lm.borrow_mut(),
+                &mut self.lm.lock().unwrap(),
                 self.txnum,
                 blk.clone(),
                 offset,
@@ -84,7 +88,7 @@ impl RecoveryMgr {
         let blk = buff.block();
         if let Some(blk) = blk {
             let lsn = SetStringRecord::write_to_log(
-                &mut self.lm.borrow_mut(),
+                &mut self.lm.lock().unwrap(),
                 self.txnum,
                 blk.clone(),
                 offset,

@@ -1,9 +1,10 @@
 use std::{
-    cell::RefCell,
     io::Error,
-    rc::Rc,
     string::FromUtf8Error,
-    sync::atomic::{AtomicUsize, Ordering},
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc, Mutex,
+    },
 };
 
 use crate::{
@@ -65,14 +66,14 @@ impl From<Error> for TransactionError {
 pub struct Transaction {
     recovery_mgr: RecoveryMgr,
     concur_mgr: ConcurrencyMgr,
-    bm: Rc<RefCell<BufferMgr>>,
+    bm: Arc<Mutex<BufferMgr>>,
     txnum: usize,
     mybuffers: BufferList,
-    lm: Rc<RefCell<LogMgr>>,
+    lm: Arc<Mutex<LogMgr>>,
 }
 
 impl Transaction {
-    pub fn new(lm: Rc<RefCell<LogMgr>>, bm: Rc<RefCell<BufferMgr>>) -> Result<Transaction, Error> {
+    pub fn new(lm: Arc<Mutex<LogMgr>>, bm: Arc<Mutex<BufferMgr>>) -> Result<Transaction, Error> {
         let txnum = next_tx_num();
         let recovery_mgr = RecoveryMgr::new(txnum, lm.clone(), bm.clone())?;
         let concur_mgr = ConcurrencyMgr::new();
@@ -97,8 +98,8 @@ impl Transaction {
 
     pub fn rollback(&mut self) -> Result<(), TransactionError> {
         self.do_rollback()?;
-        self.bm.borrow_mut().flush_all(self.txnum)?;
-        let mut lm = self.lm.borrow_mut();
+        self.bm.lock().unwrap().flush_all(self.txnum)?;
+        let mut lm = self.lm.lock().unwrap();
         let lsn = RollbackRecord::write_to_log(&mut lm, self.txnum)?;
         lm.flush(lsn)?;
         println!("transaction {} rolled back", self.txnum);
@@ -119,7 +120,7 @@ impl Transaction {
         self.concur_mgr.s_lock(blk)?;
         let idx = self.mybuffers.get_index(blk);
         if let Some(idx) = idx {
-            let mut bm = self.bm.borrow_mut();
+            let mut bm = self.bm.lock().unwrap();
             let buff = bm.buffer(idx);
             return Ok(buff.contents().get_int(offset));
         }
@@ -130,7 +131,7 @@ impl Transaction {
         self.concur_mgr.s_lock(blk)?;
         let idx = self.mybuffers.get_index(blk);
         if let Some(idx) = idx {
-            let mut bm = self.bm.borrow_mut();
+            let mut bm = self.bm.lock().unwrap();
             let buff = bm.buffer(idx);
             let s = buff.contents().get_string(offset)?;
             return Ok(s);
@@ -148,7 +149,7 @@ impl Transaction {
         self.concur_mgr.x_lock(blk)?;
         let idx = self.mybuffers.get_index(blk);
         if let Some(idx) = idx {
-            let mut bm = self.bm.borrow_mut();
+            let mut bm = self.bm.lock().unwrap();
             let buff = bm.buffer(idx);
             let mut lsn = None;
             if ok_to_log {
@@ -174,7 +175,7 @@ impl Transaction {
         self.concur_mgr.x_lock(blk)?;
         let idx = self.mybuffers.get_index(blk);
         if let Some(idx) = idx {
-            let mut bm = self.bm.borrow_mut();
+            let mut bm = self.bm.lock().unwrap();
             let buff = bm.buffer(idx);
             let mut lsn = None;
             if ok_to_log {
@@ -192,7 +193,7 @@ impl Transaction {
 
     fn do_rollback(&mut self) -> Result<(), TransactionError> {
         let mut recs = Vec::new();
-        for bytes in self.lm.borrow_mut().iterator()? {
+        for bytes in self.lm.lock().unwrap().iterator()? {
             let rec = create_log_record(bytes)?;
             if let Some(txnum) = rec.tx_number() {
                 if txnum == self.txnum {

@@ -1,8 +1,8 @@
-use std::{io::Error, rc::Rc};
+use std::{io::Error, sync::Arc};
 
 use crate::file::{blockid::BlockId, filemgr::FileMgr, page::Page};
 
-fn move_to_block(fm: Rc<FileMgr>, blk: &BlockId, p: &mut Page) -> Result<(i32, i32), Error> {
+fn move_to_block(fm: Arc<FileMgr>, blk: &BlockId, p: &mut Page) -> Result<(i32, i32), Error> {
     fm.read(blk, p)?;
     let boundary = p.get_int(0);
     let currentpos = boundary;
@@ -10,7 +10,7 @@ fn move_to_block(fm: Rc<FileMgr>, blk: &BlockId, p: &mut Page) -> Result<(i32, i
 }
 
 pub struct LogIterator {
-    fm: Rc<FileMgr>,
+    fm: Arc<FileMgr>,
     blk: BlockId,
     p: Page,
     currentpos: i32,
@@ -18,7 +18,7 @@ pub struct LogIterator {
 }
 
 impl LogIterator {
-    pub fn new(fm: Rc<FileMgr>, blk: &BlockId) -> Result<LogIterator, Error> {
+    pub fn new(fm: Arc<FileMgr>, blk: &BlockId) -> Result<LogIterator, Error> {
         let b: Vec<u8> = vec![0; fm.block_size()];
         let mut p = Page::with_vec(b);
         let (boundary, currentpos) = move_to_block(fm.clone(), blk, &mut p)?;

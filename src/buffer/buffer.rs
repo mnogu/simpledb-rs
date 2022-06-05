@@ -1,4 +1,7 @@
-use std::{cell::RefCell, io::Error, rc::Rc};
+use std::{
+    io::Error,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     file::{blockid::BlockId, filemgr::FileMgr, page::Page},
@@ -6,8 +9,8 @@ use crate::{
 };
 
 pub struct Buffer {
-    fm: Rc<FileMgr>,
-    lm: Rc<RefCell<LogMgr>>,
+    fm: Arc<FileMgr>,
+    lm: Arc<Mutex<LogMgr>>,
     contents: Page,
     blk: Option<BlockId>,
     pins: i32,
@@ -16,7 +19,7 @@ pub struct Buffer {
 }
 
 impl Buffer {
-    pub fn new(fm: Rc<FileMgr>, lm: Rc<RefCell<LogMgr>>) -> Buffer {
+    pub fn new(fm: Arc<FileMgr>, lm: Arc<Mutex<LogMgr>>) -> Buffer {
         let blocksize = fm.block_size();
         Buffer {
             fm,
@@ -63,7 +66,7 @@ impl Buffer {
     pub(in crate::buffer) fn flush(&mut self) -> Result<(), Error> {
         if let Some(_) = self.txnum {
             if let Some(lsn) = self.lsn {
-                self.lm.borrow_mut().flush(lsn)?;
+                self.lm.lock().unwrap().flush(lsn)?;
             }
             if let Some(ref blk) = self.blk {
                 self.fm.write(&blk, &mut self.contents)?;

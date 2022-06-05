@@ -1,8 +1,6 @@
 use std::{
-    cell::RefCell,
     io::Error,
-    rc::Rc,
-    sync::Mutex,
+    sync::{Arc, Mutex},
     thread::{current, park_timeout},
     time::{Duration, SystemTime, SystemTimeError},
 };
@@ -46,11 +44,11 @@ pub fn waiting_too_long(starttime: SystemTime, max_time: u128) -> Result<bool, S
 }
 
 impl BufferMgr {
-    pub fn new(fm: Rc<FileMgr>, lm: Rc<RefCell<LogMgr>>, numbuffs: usize) -> BufferMgr {
+    pub fn new(fm: Arc<FileMgr>, lm: Arc<Mutex<LogMgr>>, numbuffs: usize) -> BufferMgr {
         let mut bufferpool = Vec::with_capacity(numbuffs);
         let num_available = numbuffs;
         for _ in 0..numbuffs {
-            bufferpool.push(Buffer::new(fm.clone(), Rc::clone(&lm)));
+            bufferpool.push(Buffer::new(fm.clone(), lm.clone()));
         }
         BufferMgr {
             bufferpool,
