@@ -1,12 +1,11 @@
+use once_cell::sync::Lazy;
 use std::{collections::HashMap, sync::Mutex};
 
 use crate::{
     buffer::buffermgr::AbortError, file::blockid::BlockId, tx::concurrency::locktable::LockTable,
 };
 
-lazy_static! {
-    static ref LOCKTBL: Mutex<LockTable> = Mutex::new(LockTable::new());
-}
+static LOCKTBL: Lazy<Mutex<LockTable>> = Lazy::new(|| Mutex::new(LockTable::new()));
 
 pub struct ConcurrencyMgr {
     locks: HashMap<BlockId, String>,

@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate lazy_static;
-
 use std::fs;
 
 use file::blockid::BlockId;
