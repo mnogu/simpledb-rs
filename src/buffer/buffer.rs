@@ -10,7 +10,7 @@ pub struct Buffer {
     lm: Rc<RefCell<LogMgr>>,
     contents: Page,
     blk: Option<BlockId>,
-    pins: usize,
+    pins: i32,
     txnum: Option<usize>,
     lsn: Option<usize>,
 }
@@ -46,6 +46,10 @@ impl Buffer {
 
     pub fn is_pinned(&self) -> bool {
         self.pins > 0
+    }
+
+    pub fn modifying_tx(&self) -> Option<usize> {
+        self.txnum
     }
 
     pub(in crate::buffer) fn assign_to_block(&mut self, b: BlockId) -> Result<(), Error> {

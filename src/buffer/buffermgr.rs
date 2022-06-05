@@ -17,21 +17,21 @@ use super::buffer::Buffer;
 const MAX_TIME: u128 = 10000;
 
 #[derive(Debug)]
-pub enum BufferAbortError {
+pub enum AbortError {
     Time(SystemTimeError),
     IO(Error),
     General,
 }
 
-impl From<SystemTimeError> for BufferAbortError {
+impl From<SystemTimeError> for AbortError {
     fn from(e: SystemTimeError) -> Self {
-        BufferAbortError::Time(e)
+        AbortError::Time(e)
     }
 }
 
-impl From<Error> for BufferAbortError {
+impl From<Error> for AbortError {
     fn from(e: Error) -> Self {
-        BufferAbortError::IO(e)
+        AbortError::IO(e)
     }
 }
 
@@ -41,7 +41,7 @@ pub struct BufferMgr {
     max_time: u128,
 }
 
-fn waiting_too_long(starttime: SystemTime, max_time: u128) -> Result<bool, SystemTimeError> {
+pub fn waiting_too_long(starttime: SystemTime, max_time: u128) -> Result<bool, SystemTimeError> {
     Ok(SystemTime::now().duration_since(starttime)?.as_millis() > max_time)
 }
 
@@ -66,6 +66,17 @@ impl BufferMgr {
         *num_available
     }
 
+    pub fn flush_all(&mut self, txnum: usize) -> Result<(), Error> {
+        for buff in &mut self.bufferpool {
+            if let Some(t) = buff.modifying_tx() {
+                if t == txnum {
+                    buff.flush()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub fn unpin(&mut self, idx: usize) {
         let m = Mutex::new(&mut self.bufferpool[idx]);
         let mut buff = m.lock().unwrap();
@@ -77,7 +88,7 @@ impl BufferMgr {
         }
     }
 
-    pub fn pin(&mut self, blk: &BlockId) -> Result<usize, BufferAbortError> {
+    pub fn pin(&mut self, blk: &BlockId) -> Result<usize, AbortError> {
         let m = Mutex::new(SystemTime::now());
         let timestamp = m.lock().unwrap();
 
@@ -88,7 +99,7 @@ impl BufferMgr {
         }
         match idx {
             Some(idx) => Ok(idx),
-            None => Err(BufferAbortError::General),
+            None => Err(AbortError::General),
         }
     }
 

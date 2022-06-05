@@ -7,7 +7,8 @@ mod tests {
     #[test]
     fn buffertest() {
         let mut db = SimpleDB::new("buffertest", 400, 3).unwrap();
-        let bm = db.buffer_mgr();
+        let m = db.buffer_mgr();
+        let mut bm = m.borrow_mut();
 
         let idx1 = bm.pin(&BlockId::new("testfile", 1)).unwrap();
         let buff1 = bm.buffer(idx1);
