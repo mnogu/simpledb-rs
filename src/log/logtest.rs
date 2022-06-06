@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod tests {
     use std::{
-        cell::RefMut,
         fs,
         iter::zip,
         sync::{Arc, Mutex},
