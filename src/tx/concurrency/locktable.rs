@@ -1,6 +1,5 @@
 use std::{
     collections::HashMap,
-    sync::Mutex,
     thread::{current, park_timeout},
     time::{Duration, SystemTime},
 };
@@ -26,9 +25,8 @@ impl LockTable {
     }
 
     pub fn s_lock(&mut self, blk: &BlockId) -> Result<(), AbortError> {
-        let m = Mutex::new(SystemTime::now());
-        let timestamp = m.lock().unwrap();
-        while self.has_x_lock(blk) && !waiting_too_long(*timestamp, self.max_time)? {
+        let timestamp = SystemTime::now();
+        while self.has_x_lock(blk) && !waiting_too_long(timestamp, self.max_time)? {
             park_timeout(Duration::from_millis(self.max_time as u64));
         }
         if self.has_x_lock(&blk) {
@@ -40,10 +38,9 @@ impl LockTable {
     }
 
     pub(in crate::tx::concurrency) fn unlock(&mut self, blk: &BlockId) {
-        let m = Mutex::new(self.get_lock_val(blk));
-        let val = m.lock().unwrap();
-        if *val > 1 {
-            self.locks.insert(blk.clone(), *val - 1);
+        let val = self.get_lock_val(blk);
+        if val > 1 {
+            self.locks.insert(blk.clone(), val - 1);
         } else {
             self.locks.remove(blk);
             current().unpark();

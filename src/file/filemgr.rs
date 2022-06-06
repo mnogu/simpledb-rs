@@ -1,7 +1,6 @@
 use std::fs::{File, OpenOptions};
 use std::io::{Read, SeekFrom, Write};
 use std::path::Path;
-use std::sync::Mutex;
 use std::{io::Error, io::Seek};
 
 use super::blockid::BlockId;
@@ -24,24 +23,17 @@ impl FileMgr {
     }
 
     pub fn read(&self, blk: &BlockId, p: &mut Page) -> Result<(), Error> {
-        let file = self.get_file(blk.file_name())?;
-        let m = Mutex::new(file);
-        let mut f = m.lock().unwrap();
-
+        let mut f = self.get_file(blk.file_name())?;
         let pos = (blk.number() as usize * self.blocksize) as u64;
         f.seek(SeekFrom::Start(pos))?;
         if f.metadata()?.len() >= pos + p.contents().len() as u64 {
             f.read_exact(&mut p.contents())?;
         }
-
         Ok(())
     }
 
     pub fn write(&self, blk: &BlockId, p: &mut Page) -> Result<(), Error> {
-        let file = self.get_file(blk.file_name())?;
-        let m = Mutex::new(file);
-        let mut f = m.lock().unwrap();
-
+        let mut f = self.get_file(blk.file_name())?;
         f.seek(SeekFrom::Start(
             (blk.number() as usize * self.blocksize) as u64,
         ))?;
@@ -56,10 +48,7 @@ impl FileMgr {
         let blk = BlockId::new(filename, newblknum as i32);
         let b: Vec<u8> = vec![0; self.blocksize];
 
-        let file = self.get_file(blk.file_name())?;
-        let m = Mutex::new(file);
-        let mut f = m.lock().unwrap();
-
+        let mut f = self.get_file(blk.file_name())?;
         f.seek(SeekFrom::Start(
             (blk.number() as usize * self.blocksize) as u64,
         ))?;

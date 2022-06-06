@@ -1,7 +1,4 @@
-use std::{
-    io::Error,
-    sync::{Arc, Mutex},
-};
+use std::{io::Error, sync::Arc};
 
 use crate::file::{blockid::BlockId, filemgr::FileMgr, page::Page};
 
@@ -58,11 +55,8 @@ impl LogMgr {
     }
 
     pub fn append(&mut self, logrec: &Vec<u8>) -> Result<usize, Error> {
-        let m = Mutex::new(logrec);
-        let rec = m.lock().unwrap();
-
         let mut boundary = self.logpage.get_int(0);
-        let recsize = rec.len() as i32;
+        let recsize = logrec.len() as i32;
         let bytesneeded = recsize + 4;
         if boundary - bytesneeded < 4 {
             self.flush_impl()?;
@@ -70,7 +64,7 @@ impl LogMgr {
             boundary = self.logpage.get_int(0);
         }
         let recpos = boundary - bytesneeded;
-        self.logpage.set_bytes(recpos as usize, &rec);
+        self.logpage.set_bytes(recpos as usize, logrec);
         self.logpage.set_int(0, recpos);
         self.lastest_lsn += 1;
         Ok(self.lastest_lsn)

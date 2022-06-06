@@ -58,14 +58,11 @@ impl BufferMgr {
     }
 
     pub fn available(&self) -> usize {
-        let m = Mutex::new(self.num_available);
-        let num_available = m.lock().unwrap();
-
-        *num_available
+        self.num_available
     }
 
     pub fn flush_all(&mut self, txnum: usize) -> Result<(), Error> {
-        for buff in &mut self.bufferpool {
+        for buff in self.bufferpool.iter_mut() {
             if let Some(t) = buff.modifying_tx() {
                 if t == txnum {
                     buff.flush()?;
@@ -76,9 +73,7 @@ impl BufferMgr {
     }
 
     pub fn unpin(&mut self, idx: usize) {
-        let m = Mutex::new(&mut self.bufferpool[idx]);
-        let mut buff = m.lock().unwrap();
-
+        let buff = &mut self.bufferpool[idx];
         buff.unpin();
         if !buff.is_pinned() {
             self.num_available += 1;
@@ -87,11 +82,9 @@ impl BufferMgr {
     }
 
     pub fn pin(&mut self, blk: &BlockId) -> Result<usize, AbortError> {
-        let m = Mutex::new(SystemTime::now());
-        let timestamp = m.lock().unwrap();
-
+        let timestamp = SystemTime::now();
         let mut idx = self.try_to_pin(blk)?;
-        while idx.is_none() && !waiting_too_long(*timestamp, self.max_time)? {
+        while idx.is_none() && !waiting_too_long(timestamp, self.max_time)? {
             park_timeout(Duration::from_millis(self.max_time as u64));
             idx = self.try_to_pin(blk)?;
         }
