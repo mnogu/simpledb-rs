@@ -10,15 +10,6 @@ pub struct Layout {
     slotsize: usize,
 }
 
-fn length_in_bytes(l: &Layout, fldname: &str) -> usize {
-    let fldtype = l.schema.type_(fldname);
-    let bytes = 4;
-    match fldtype {
-        super::schema::Type::Integer => bytes,
-        super::schema::Type::Varchar => Page::max_length(l.schema.length(fldname)),
-    }
-}
-
 impl Layout {
     pub fn new(schema: Schema) -> Layout {
         let offsets = HashMap::new();
@@ -33,7 +24,7 @@ impl Layout {
 
         for fldname in l.schema.fields() {
             l.offsets.insert(fldname.to_string(), l.slotsize);
-            l.slotsize += length_in_bytes(&l, &fldname);
+            l.slotsize += l.length_in_bytes(&fldname);
         }
 
         l
@@ -49,5 +40,14 @@ impl Layout {
 
     pub fn slot_size(&self) -> usize {
         self.slotsize
+    }
+
+    fn length_in_bytes(&self, fldname: &str) -> usize {
+        let fldtype = self.schema.type_(fldname);
+        let bytes = 4;
+        match fldtype {
+            super::schema::Type::Integer => bytes,
+            super::schema::Type::Varchar => Page::max_length(self.schema.length(fldname)),
+        }
     }
 }
