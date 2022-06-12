@@ -16,14 +16,14 @@ enum Flag {
 pub struct RecordPage {
     tx: Arc<Mutex<Transaction>>,
     blk: BlockId,
-    layout: Layout,
+    layout: Arc<Layout>,
 }
 
 impl RecordPage {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         blk: BlockId,
-        layout: Layout,
+        layout: Arc<Layout>,
     ) -> Result<RecordPage, AbortError> {
         tx.lock().unwrap().pin(&blk)?;
         Ok(RecordPage { tx, blk, layout })
@@ -111,6 +111,10 @@ impl RecordPage {
             self.set_flag(newslot, Flag::Used)?;
         }
         Ok(newslot)
+    }
+
+    pub fn block(&self) -> &BlockId {
+        &self.blk
     }
 
     fn set_flag(&mut self, slot: usize, flag: Flag) -> Result<(), TransactionError> {

@@ -24,6 +24,7 @@ use super::{
 };
 
 static NEXT_TX_NUM: AtomicUsize = AtomicUsize::new(0);
+const END_OF_FILE: i32 = -1;
 
 fn next_tx_num() -> usize {
     NEXT_TX_NUM.fetch_add(1, Ordering::SeqCst);
@@ -217,8 +218,14 @@ impl Transaction {
         Ok(())
     }
 
+    pub fn size(&mut self, filename: &str) -> Result<usize, TransactionError> {
+        let dummyblk = BlockId::new(filename, END_OF_FILE);
+        self.concur_mgr.s_lock(&dummyblk)?;
+        Ok(self.fm.length(filename)?)
+    }
+
     pub fn append(&mut self, filename: &str) -> Result<BlockId, TransactionError> {
-        let dummyblk = BlockId::new(filename, -1);
+        let dummyblk = BlockId::new(filename, END_OF_FILE);
         self.concur_mgr.x_lock(&dummyblk)?;
         Ok(self.fm.append(filename)?)
     }
