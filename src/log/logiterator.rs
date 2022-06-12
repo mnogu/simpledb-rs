@@ -2,13 +2,6 @@ use std::{io::Error, sync::Arc};
 
 use crate::file::{blockid::BlockId, filemgr::FileMgr, page::Page};
 
-fn move_to_block(fm: Arc<FileMgr>, blk: &BlockId, p: &mut Page) -> Result<(i32, i32), Error> {
-    fm.read(blk, p)?;
-    let boundary = p.get_int(0);
-    let currentpos = boundary;
-    Ok((boundary, currentpos))
-}
-
 pub struct LogIterator {
     fm: Arc<FileMgr>,
     blk: BlockId,
@@ -20,19 +13,22 @@ pub struct LogIterator {
 impl LogIterator {
     pub fn new(fm: Arc<FileMgr>, blk: &BlockId) -> Result<LogIterator, Error> {
         let b: Vec<u8> = vec![0; fm.block_size()];
-        let mut p = Page::with_vec(b);
-        let (boundary, currentpos) = move_to_block(fm.clone(), blk, &mut p)?;
-        Ok(LogIterator {
+        let p = Page::with_vec(b);
+        let mut l = LogIterator {
             fm,
             blk: blk.clone(),
             p,
-            currentpos,
-            boundary,
-        })
+            currentpos: 0,
+            boundary: 0,
+        };
+        l.move_to_block(blk)?;
+        Ok(l)
     }
 
     fn move_to_block(&mut self, blk: &BlockId) -> Result<(), Error> {
-        let (boundary, currentpos) = move_to_block(self.fm.clone(), blk, &mut self.p)?;
+        self.fm.clone().read(blk, &mut self.p)?;
+        let boundary = self.p.get_int(0);
+        let currentpos = boundary;
         self.boundary = boundary;
         self.currentpos = currentpos;
         Ok(())
