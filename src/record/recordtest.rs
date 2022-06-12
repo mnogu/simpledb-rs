@@ -62,7 +62,7 @@ mod tests {
             }
             slot = rp.next_after(slot).unwrap();
         }
-        assert!(count <= 18);
+        assert!(count >= 0 && count <= 18);
 
         slot = rp.next_after(None).unwrap();
         while let Some(s) = slot {
