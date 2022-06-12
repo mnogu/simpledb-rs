@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use crate::buffer::buffermgr::BufferMgr;
 use crate::file::filemgr::FileMgr;
 use crate::log::logmgr::LogMgr;
+use crate::tx::transaction::Transaction;
 
 pub struct SimpleDB {
     fm: Arc<FileMgr>,
@@ -17,6 +18,10 @@ impl SimpleDB {
         let lm = Arc::new(Mutex::new(LogMgr::new(fm.clone(), "simpledb.log")?));
         let bm = Arc::new(Mutex::new(BufferMgr::new(fm.clone(), lm.clone(), buffsize)));
         Ok(SimpleDB { fm, lm, bm })
+    }
+
+    pub fn new_tx(&self) -> Result<Transaction, Error> {
+        Transaction::new(self.fm.clone(), self.lm.clone(), self.bm.clone())
     }
 
     pub fn file_mgr(&self) -> Arc<FileMgr> {

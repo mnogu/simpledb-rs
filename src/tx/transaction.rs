@@ -9,7 +9,7 @@ use std::{
 
 use crate::{
     buffer::buffermgr::{AbortError, BufferMgr},
-    file::blockid::BlockId,
+    file::{blockid::BlockId, filemgr::FileMgr},
     log::logmgr::LogMgr,
     tx::recovery::rollbackrecord::RollbackRecord,
 };
@@ -67,13 +67,18 @@ pub struct Transaction {
     recovery_mgr: RecoveryMgr,
     concur_mgr: ConcurrencyMgr,
     bm: Arc<Mutex<BufferMgr>>,
+    fm: Arc<FileMgr>,
     txnum: usize,
     mybuffers: BufferList,
     lm: Arc<Mutex<LogMgr>>,
 }
 
 impl Transaction {
-    pub fn new(lm: Arc<Mutex<LogMgr>>, bm: Arc<Mutex<BufferMgr>>) -> Result<Transaction, Error> {
+    pub fn new(
+        fm: Arc<FileMgr>,
+        lm: Arc<Mutex<LogMgr>>,
+        bm: Arc<Mutex<BufferMgr>>,
+    ) -> Result<Transaction, Error> {
         let txnum = next_tx_num();
         let recovery_mgr = RecoveryMgr::new(txnum, lm.clone(), bm.clone())?;
         let concur_mgr = ConcurrencyMgr::new();
@@ -82,6 +87,7 @@ impl Transaction {
             recovery_mgr,
             concur_mgr,
             bm,
+            fm,
             txnum,
             mybuffers,
             lm,
@@ -209,5 +215,15 @@ impl Transaction {
             rec.undo(self)?;
         }
         Ok(())
+    }
+
+    pub fn append(&mut self, filename: &str) -> Result<BlockId, TransactionError> {
+        let dummyblk = BlockId::new(filename, -1);
+        self.concur_mgr.x_lock(&dummyblk)?;
+        Ok(self.fm.append(filename)?)
+    }
+
+    pub fn block_size(&self) -> usize {
+        self.fm.block_size()
     }
 }

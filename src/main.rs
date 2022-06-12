@@ -1,94 +1,74 @@
 use std::{
     fs,
     sync::{Arc, Mutex},
-    thread,
-    time::Duration,
 };
 
-use buffer::buffermgr::BufferMgr;
-use file::blockid::BlockId;
-use log::logmgr::LogMgr;
+use rand::{distributions::Uniform, prelude::Distribution};
+
+use record::{layout::Layout, recordpage::RecordPage, schema::Schema};
 use server::simpledb::SimpleDB;
-use tx::transaction::Transaction;
 
 mod buffer;
 mod file;
 mod log;
+mod record;
 mod server;
 mod tx;
 
 fn main() {
-    let mut db = SimpleDB::new("concurrencytest", 400, 8).unwrap();
-    let lm = db.log_mgr();
-    let bm = db.buffer_mgr();
+    let db = SimpleDB::new("recordtest", 400, 8).unwrap();
+    let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
 
-    let lm_a = lm.clone();
-    let bm_a = bm.clone();
-    let handler_a = thread::spawn(move || run_a(lm_a, bm_a));
+    let mut sch = Schema::new();
+    sch.add_int_field("A");
+    sch.add_string_field("B", 9);
+    let layout = Layout::new(sch);
+    for fldname in layout.schema().fields() {
+        let offset = layout.offset(fldname);
+        println!("{} has offset {}", fldname, offset);
+    }
+    let blk = tx.lock().unwrap().append("testfile").unwrap();
+    tx.lock().unwrap().pin(&blk).unwrap();
+    let mut rp = RecordPage::new(tx.clone(), blk.clone(), layout).unwrap();
+    rp.format().unwrap();
 
-    let lm_b = lm.clone();
-    let bm_b = bm.clone();
-    let handler_b = thread::spawn(move || run_b(lm_b, bm_b));
+    println!("Filling the page with random records.");
+    let mut slot = rp.insert_after(None).unwrap();
+    let mut rng = rand::thread_rng();
+    let die = Uniform::from(0..50);
+    while let Some(s) = slot {
+        let n = die.sample(&mut rng);
+        rp.set_int(s, "A", n).unwrap();
+        rp.set_string(s, "B", &format!("rec{}", n)).unwrap();
+        println!("inserting into slot {}: {{{}, rec{}}}", s, n, n);
+        slot = rp.insert_after(slot).unwrap();
+    }
 
-    let lm_c = lm.clone();
-    let bm_c = bm.clone();
-    let handler_c = thread::spawn(move || run_c(lm_c, bm_c));
+    println!("Deleting these records, whose A-values are less than 25.");
+    let mut count = 0;
+    slot = rp.next_after(None).unwrap();
+    while let Some(s) = slot {
+        let a = rp.get_int(s, "A").unwrap();
+        let b = rp.get_string(s, "B").unwrap();
+        if a < 25 {
+            count += 1;
+            println!("slot {}: {{{}, {}}}", s, a, b);
+            rp.delete(s).unwrap();
+        }
+        slot = rp.next_after(slot).unwrap();
+    }
+    println!("{} values under 25 were delted.\n", count);
 
-    handler_a.join().unwrap();
-    handler_b.join().unwrap();
-    handler_c.join().unwrap();
+    println!("Here are the remaining records.");
+    slot = rp.next_after(None).unwrap();
+    while let Some(s) = slot {
+        let a = rp.get_int(s, "A").unwrap();
+        let b = rp.get_string(s, "B").unwrap();
+        println!("slot {}: {{{}, {}}}", s, a, b);
+        slot = rp.next_after(slot).unwrap();
+    }
+    tx.lock().unwrap().unpin(&blk).unwrap();
+    tx.lock().unwrap().commit().unwrap();
 
-    fs::remove_dir_all("concurrencytest").unwrap();
-}
-
-fn run_a(lm: Arc<Mutex<LogMgr>>, bm: Arc<Mutex<BufferMgr>>) {
-    let mut tx_a = Transaction::new(lm, bm).unwrap();
-    let blk1 = BlockId::new("testfile", 1);
-    let blk2 = BlockId::new("testfile", 2);
-    tx_a.pin(&blk1).unwrap();
-    tx_a.pin(&blk2).unwrap();
-    println!("Tx A: request slock 1");
-    tx_a.get_int(&blk1, 0).unwrap();
-    println!("Tx A: receive slock 1");
-    thread::sleep(Duration::from_millis(1000));
-    println!("Tx A: request slock 2");
-    tx_a.get_int(&blk2, 0).unwrap();
-    println!("Tx A: receive slock 2");
-    tx_a.commit().unwrap();
-    println!("Tx A: commit");
-}
-
-fn run_b(lm: Arc<Mutex<LogMgr>>, bm: Arc<Mutex<BufferMgr>>) {
-    let mut tx_b = Transaction::new(lm, bm).unwrap();
-    let blk1 = BlockId::new("testfile", 1);
-    let blk2 = BlockId::new("testfile", 2);
-    tx_b.pin(&blk1).unwrap();
-    tx_b.pin(&blk2).unwrap();
-    println!("Tx B: request xlock 2");
-    tx_b.set_int(&blk2, 0, 0, false).unwrap();
-    println!("Tx B: receive xlock 2");
-    thread::sleep(Duration::from_millis(1000));
-    println!("Tx B: request slock 1");
-    tx_b.get_int(&blk1, 0).unwrap();
-    println!("Tx B: receive slock 1");
-    tx_b.commit().unwrap();
-    println!("Tx B: commit");
-}
-
-fn run_c(lm: Arc<Mutex<LogMgr>>, bm: Arc<Mutex<BufferMgr>>) {
-    let mut tx_c = Transaction::new(lm, bm).unwrap();
-    let blk1 = BlockId::new("testfile", 1);
-    let blk2 = BlockId::new("testfile", 2);
-    tx_c.pin(&blk1).unwrap();
-    tx_c.pin(&blk2).unwrap();
-    thread::sleep(Duration::from_millis(500));
-    println!("Tx C: request xlock 1");
-    tx_c.set_int(&blk1, 0, 0, false).unwrap();
-    println!("Tx C: receive xlock 1");
-    thread::sleep(Duration::from_millis(1000));
-    println!("Tx C: request slock 2");
-    tx_c.get_int(&blk2, 0).unwrap();
-    println!("Tx C: receive slock 2");
-    tx_c.commit().unwrap();
-    println!("Tx C: commit");
+    fs::remove_dir_all("recordtest").unwrap();
 }
