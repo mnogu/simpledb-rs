@@ -27,10 +27,8 @@ impl LogIterator {
 
     fn move_to_block(&mut self, blk: &BlockId) -> Result<(), Error> {
         self.fm.clone().read(blk, &mut self.p)?;
-        let boundary = self.p.get_int(0);
-        let currentpos = boundary;
-        self.boundary = boundary;
-        self.currentpos = currentpos;
+        self.boundary = self.p.get_int(0);
+        self.currentpos = self.boundary;
         Ok(())
     }
 }
