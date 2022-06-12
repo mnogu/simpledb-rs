@@ -64,7 +64,7 @@ impl Buffer {
     }
 
     pub(in crate::buffer) fn flush(&mut self) -> Result<(), Error> {
-        if let Some(_) = self.txnum {
+        if self.txnum.is_some() {
             if let Some(lsn) = self.lsn {
                 self.lm.lock().unwrap().flush(lsn)?;
             }
