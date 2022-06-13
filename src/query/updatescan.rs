@@ -3,7 +3,7 @@ use crate::{record::rid::Rid, tx::transaction::TransactionError};
 use super::{contant::Constant, scan::Scan};
 
 pub trait UpdateScan: Scan {
-    fn set_val(&self, fldname: &str, val: Constant);
+    fn set_val(&mut self, fldname: &str, val: Constant) -> Result<(), TransactionError>;
 
     fn set_int(&mut self, fldname: &str, val: i32) -> Result<(), TransactionError>;
 
@@ -15,5 +15,5 @@ pub trait UpdateScan: Scan {
 
     fn get_rid(&self) -> Option<Rid>;
 
-    fn move_to_rid(&self, rid: &Rid);
+    fn move_to_rid(&mut self, rid: &Rid) -> Result<(), TransactionError>;
 }

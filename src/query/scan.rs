@@ -11,7 +11,7 @@ pub trait Scan {
 
     fn get_string(&mut self, fldname: &str) -> Result<String, TransactionError>;
 
-    fn get_val(&self, fldname: &str) -> Constant;
+    fn get_val(&mut self, fldname: &str) -> Result<Constant, TransactionError>;
 
     fn has_field(&self, fldname: &str) -> bool;
 

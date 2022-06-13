@@ -37,6 +37,10 @@ impl Schema {
         &self.fields
     }
 
+    pub fn has_field(&self, fldname: &str) -> bool {
+        self.fields.contains(&fldname.to_string())
+    }
+
     pub fn type_(&self, fldname: &str) -> Type {
         self.info[fldname].type_
     }

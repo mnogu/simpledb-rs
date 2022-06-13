@@ -7,7 +7,7 @@ use crate::{
     tx::transaction::{Transaction, TransactionError},
 };
 
-use super::{layout::Layout, recordpage::RecordPage, rid::Rid};
+use super::{layout::Layout, recordpage::RecordPage, rid::Rid, schema::Type};
 
 pub struct TableScan {
     tx: Arc<Mutex<Transaction>>,
@@ -68,12 +68,15 @@ impl Scan for TableScan {
         Err(TransactionError::General)
     }
 
-    fn get_val(&self, _fldname: &str) -> Constant {
-        todo!()
+    fn get_val(&mut self, fldname: &str) -> Result<Constant, TransactionError> {
+        match self.layout.schema().type_(fldname) {
+            Type::Integer => Ok(Constant::with_integer(self.get_int(fldname)?)),
+            Type::Varchar => Ok(Constant::with_string(&self.get_string(fldname)?)),
+        }
     }
 
-    fn has_field(&self, _fldname: &str) -> bool {
-        todo!()
+    fn has_field(&self, fldname: &str) -> bool {
+        self.layout.schema().has_field(fldname)
     }
 
     fn close(&mut self) -> Result<(), AbortError> {
@@ -85,8 +88,15 @@ impl Scan for TableScan {
 }
 
 impl UpdateScan for TableScan {
-    fn set_val(&self, _fldname: &str, _val: Constant) {
-        todo!()
+    fn set_val(&mut self, fldname: &str, val: Constant) -> Result<(), TransactionError> {
+        match self.layout.schema().type_(fldname) {
+            Type::Integer => {
+                Ok(self.set_int(fldname, val.as_int().ok_or(TransactionError::General)?)?)
+            }
+            Type::Varchar => {
+                Ok(self.set_string(fldname, &val.as_string().ok_or(TransactionError::General)?)?)
+            }
+        }
     }
 
     fn set_int(&mut self, fldname: &str, val: i32) -> Result<(), TransactionError> {
@@ -157,8 +167,12 @@ impl UpdateScan for TableScan {
         None
     }
 
-    fn move_to_rid(&self, _rid: &Rid) {
-        todo!()
+    fn move_to_rid(&mut self, rid: &Rid) -> Result<(), TransactionError> {
+        self.close()?;
+        let blk = BlockId::new(&self.filename, rid.block_number());
+        self.rp = Some(RecordPage::new(self.tx.clone(), blk, self.layout.clone())?);
+        self.currentslot = Some(rid.slot());
+        Ok(())
     }
 }
 
