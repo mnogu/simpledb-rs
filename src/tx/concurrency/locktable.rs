@@ -14,13 +14,13 @@ pub struct LockTable {
     max_time: u128,
 }
 
-const MAX_TIME: u128 = 10000;
-
 impl LockTable {
+    const MAX_TIME: u128 = 10000;
+
     pub fn new() -> LockTable {
         LockTable {
             locks: HashMap::new(),
-            max_time: MAX_TIME,
+            max_time: LockTable::MAX_TIME,
         }
     }
 

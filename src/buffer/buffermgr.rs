@@ -12,8 +12,6 @@ use crate::{
 
 use super::buffer::Buffer;
 
-const MAX_TIME: u128 = 10000;
-
 #[derive(Debug)]
 pub enum AbortError {
     Time(SystemTimeError),
@@ -44,6 +42,8 @@ pub fn waiting_too_long(starttime: SystemTime, max_time: u128) -> Result<bool, S
 }
 
 impl BufferMgr {
+    const MAX_TIME: u128 = 10000;
+
     pub fn new(fm: Arc<FileMgr>, lm: Arc<Mutex<LogMgr>>, numbuffs: usize) -> BufferMgr {
         let mut bufferpool = Vec::with_capacity(numbuffs);
         let num_available = numbuffs;
@@ -53,7 +53,7 @@ impl BufferMgr {
         BufferMgr {
             bufferpool,
             num_available,
-            max_time: MAX_TIME,
+            max_time: BufferMgr::MAX_TIME,
         }
     }
 
