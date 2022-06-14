@@ -4,7 +4,7 @@ pub struct Constant {
 }
 
 impl Constant {
-    pub fn with_integer(ival: i32) -> Constant {
+    pub fn with_int(ival: i32) -> Constant {
         Constant {
             ival: Some(ival),
             sval: None,

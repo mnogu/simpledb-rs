@@ -70,7 +70,7 @@ impl Scan for TableScan {
 
     fn get_val(&mut self, fldname: &str) -> Result<Constant, TransactionError> {
         match self.layout.schema().type_(fldname) {
-            Type::Integer => Ok(Constant::with_integer(self.get_int(fldname)?)),
+            Type::Integer => Ok(Constant::with_int(self.get_int(fldname)?)),
             Type::Varchar => Ok(Constant::with_string(&self.get_string(fldname)?)),
         }
     }
