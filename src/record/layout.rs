@@ -1,17 +1,17 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use crate::file::page::Page;
 
 use super::schema::Schema;
 
 pub struct Layout {
-    schema: Schema,
+    schema: Arc<Schema>,
     offsets: HashMap<String, usize>,
     slotsize: usize,
 }
 
 impl Layout {
-    pub fn new(schema: Schema) -> Layout {
+    pub fn new(schema: Arc<Schema>) -> Layout {
         let offsets = HashMap::new();
         let bytes = 4;
         let pos = bytes;
@@ -28,6 +28,18 @@ impl Layout {
         }
 
         l
+    }
+
+    pub fn with_metadata(
+        schema: Arc<Schema>,
+        offsets: HashMap<String, usize>,
+        slotsize: usize,
+    ) -> Layout {
+        Layout {
+            schema,
+            offsets,
+            slotsize,
+        }
     }
 
     pub fn schema(&self) -> &Schema {
