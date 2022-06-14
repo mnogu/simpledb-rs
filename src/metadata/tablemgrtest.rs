@@ -27,7 +27,7 @@ mod tests {
         let size = layout.slot_size();
         let sch2 = layout.schema();
         assert_eq!(size, 21);
-        for (i, fldname) in (0..).zip(sch2.fields()) {
+        for (i, fldname) in sch2.fields().iter().enumerate() {
             match sch2.type_(&fldname) {
                 Type::Integer => assert_eq!(i, 0),
                 Type::Varchar => {
