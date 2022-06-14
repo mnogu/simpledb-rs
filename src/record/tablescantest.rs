@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod tests {
     use std::{
-        collections::HashMap,
         fs,
         sync::{Arc, Mutex},
     };
@@ -24,13 +23,12 @@ mod tests {
         sch.add_string_field("B", 9);
         let layout = Arc::new(Layout::new(Arc::new(sch)));
 
-        let mut m = HashMap::new();
-        m.insert("A".to_string(), 4);
-        m.insert("B".to_string(), 8);
+        let e = [("A", 4), ("B", 8)];
+        for (i, fldname) in layout.schema().fields().iter().enumerate() {
+            assert_eq!(fldname, e[i].0);
 
-        for fldname in layout.schema().fields() {
             let offset = layout.offset(fldname);
-            assert_eq!(m[fldname], offset);
+            assert_eq!(offset, e[i].1);
         }
 
         let mut ts = TableScan::new(tx.clone(), "T", layout.clone()).unwrap();
