@@ -26,31 +26,15 @@ pub trait LogRecord {
     fn undo(&self, tx: &mut Transaction) -> Result<(), TransactionError>;
 }
 
-impl TryFrom<i32> for Op {
-    type Error = ();
-
-    fn try_from(value: i32) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Op::CheckPoint),
-            1 => Ok(Op::Start),
-            2 => Ok(Op::Commit),
-            3 => Ok(Op::Rollback),
-            4 => Ok(Op::SetInt),
-            5 => Ok(Op::SetString),
-            _ => Err(()),
-        }
-    }
-}
-
 pub fn create_log_record(bytes: Vec<u8>) -> Result<Box<dyn LogRecord>, TransactionError> {
     let p = Page::with_vec(bytes);
-    match (p.get_int(0)).try_into() {
-        Ok(Op::CheckPoint) => Ok(Box::new(CheckPointRecord::new())),
-        Ok(Op::Start) => Ok(Box::new(StartRecord::new(p))),
-        Ok(Op::Commit) => Ok(Box::new(CommitRecord::new(p))),
-        Ok(Op::Rollback) => Ok(Box::new(RollbackRecord::new(p))),
-        Ok(Op::SetInt) => Ok(Box::new(SetIntRecord::new(p)?)),
-        Ok(Op::SetString) => Ok(Box::new(SetStringRecord::new(p)?)),
-        Err(_) => Err(TransactionError::General),
+    match p.get_int(0) {
+        x if x == Op::CheckPoint as i32 => Ok(Box::new(CheckPointRecord::new())),
+        x if x == Op::Start as i32 => Ok(Box::new(StartRecord::new(p))),
+        x if x == Op::Commit as i32 => Ok(Box::new(CommitRecord::new(p))),
+        x if x == Op::Rollback as i32 => Ok(Box::new(RollbackRecord::new(p))),
+        x if x == Op::SetInt as i32 => Ok(Box::new(SetIntRecord::new(p)?)),
+        x if x == Op::SetString as i32 => Ok(Box::new(SetStringRecord::new(p)?)),
+        _ => Err(TransactionError::General),
     }
 }
