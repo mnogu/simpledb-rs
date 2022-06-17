@@ -19,7 +19,7 @@ pub struct TableMgr {
 }
 
 impl TableMgr {
-    const MAX_NAME: usize = 16;
+    pub const MAX_NAME: usize = 16;
 
     pub fn new(is_new: bool, tx: Arc<Mutex<Transaction>>) -> Result<TableMgr, TransactionError> {
         let mut tcat_schema = Schema::new();

@@ -42,8 +42,8 @@ impl Layout {
         }
     }
 
-    pub fn schema(&self) -> &Schema {
-        &self.schema
+    pub fn schema(&self) -> Arc<Schema> {
+        self.schema.clone()
     }
 
     pub fn offset(&self, fldname: &str) -> usize {
