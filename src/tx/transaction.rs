@@ -205,6 +205,22 @@ impl Transaction {
         Err(TransactionError::General)
     }
 
+    pub fn size(&mut self, filename: &str) -> Result<usize, TransactionError> {
+        let dummyblk = BlockId::new(filename, Transaction::END_OF_FILE);
+        self.concur_mgr.s_lock(&dummyblk)?;
+        Ok(self.fm.length(filename)?)
+    }
+
+    pub fn append(&mut self, filename: &str) -> Result<BlockId, TransactionError> {
+        let dummyblk = BlockId::new(filename, Transaction::END_OF_FILE);
+        self.concur_mgr.x_lock(&dummyblk)?;
+        Ok(self.fm.append(filename)?)
+    }
+
+    pub fn block_size(&self) -> usize {
+        self.fm.block_size()
+    }
+
     fn do_rollback(&mut self) -> Result<(), TransactionError> {
         let mut recs = Vec::new();
         for bytes in self.lm.lock().unwrap().iterator()? {
@@ -223,22 +239,6 @@ impl Transaction {
             rec.undo(self)?;
         }
         Ok(())
-    }
-
-    pub fn size(&mut self, filename: &str) -> Result<usize, TransactionError> {
-        let dummyblk = BlockId::new(filename, Transaction::END_OF_FILE);
-        self.concur_mgr.s_lock(&dummyblk)?;
-        Ok(self.fm.length(filename)?)
-    }
-
-    pub fn append(&mut self, filename: &str) -> Result<BlockId, TransactionError> {
-        let dummyblk = BlockId::new(filename, Transaction::END_OF_FILE);
-        self.concur_mgr.x_lock(&dummyblk)?;
-        Ok(self.fm.append(filename)?)
-    }
-
-    pub fn block_size(&self) -> usize {
-        self.fm.block_size()
     }
 
     fn do_recover(&mut self) -> Result<(), TransactionError> {
