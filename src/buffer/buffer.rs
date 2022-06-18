@@ -40,10 +40,10 @@ impl Buffer {
         &self.blk
     }
 
-    pub fn set_modified(&mut self, txnum: usize, lsn: i32) {
+    pub fn set_modified(&mut self, txnum: usize, lsn: Option<usize>) {
         self.txnum = Some(txnum);
-        if lsn >= 0 {
-            self.lsn = Some(lsn as usize);
+        if lsn.is_some() {
+            self.lsn = lsn;
         }
     }
 

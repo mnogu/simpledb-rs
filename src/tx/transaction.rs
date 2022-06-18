@@ -18,6 +18,7 @@ use super::{
     bufferlist::BufferList,
     concurrency::concurrencymgr::ConcurrencyMgr,
     recovery::{
+        checkpointrecord::CheckPointRecord,
         logrecord::{create_log_record, Op},
         recoverymgr::{RecoveryError, RecoveryMgr},
     },
@@ -116,6 +117,15 @@ impl Transaction {
         Ok(())
     }
 
+    pub fn recover(&mut self) -> Result<(), TransactionError> {
+        self.bm.lock().unwrap().flush_all(self.txnum)?;
+        self.do_recover()?;
+        self.bm.lock().unwrap().flush_all(self.txnum)?;
+        let lsn = CheckPointRecord::write_to_log(&mut self.lm.lock().unwrap())?;
+        self.lm.lock().unwrap().flush(lsn)?;
+        Ok(())
+    }
+
     pub fn pin(&mut self, blk: &BlockId) -> Result<(), AbortError> {
         self.mybuffers.pin(blk)
     }
@@ -165,9 +175,7 @@ impl Transaction {
             }
             let p = buff.contents();
             p.set_int(offset, val);
-            if let Some(lsn) = lsn {
-                buff.set_modified(self.txnum, lsn as i32);
-            }
+            buff.set_modified(self.txnum, lsn);
             return Ok(());
         }
         Err(TransactionError::General)
@@ -191,9 +199,7 @@ impl Transaction {
             }
             let p = buff.contents();
             p.set_string(offset, val);
-            if let Some(lsn) = lsn {
-                buff.set_modified(self.txnum, lsn as i32);
-            }
+            buff.set_modified(self.txnum, lsn);
             return Ok(());
         }
         Err(TransactionError::General)
@@ -233,5 +239,27 @@ impl Transaction {
 
     pub fn block_size(&self) -> usize {
         self.fm.block_size()
+    }
+
+    fn do_recover(&mut self) -> Result<(), TransactionError> {
+        let mut finished_txs = Vec::new();
+        let mut recs = Vec::new();
+        for bytes in self.lm.lock().unwrap().iterator()? {
+            let rec = create_log_record(bytes)?;
+            if rec.op() == Op::CheckPoint {
+                return Ok(());
+            }
+            if let Some(tx_number) = rec.tx_number() {
+                if rec.op() == Op::Commit || rec.op() == Op::Rollback {
+                    finished_txs.push(tx_number);
+                } else if !finished_txs.contains(&tx_number) {
+                    recs.push(rec);
+                }
+            }
+        }
+        for rec in recs.iter() {
+            rec.undo(self)?;
+        }
+        Ok(())
     }
 }

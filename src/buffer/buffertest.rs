@@ -15,7 +15,7 @@ mod tests {
         let p = buff1.contents();
         let n = p.get_int(80);
         p.set_int(80, n + 1);
-        buff1.set_modified(1, 0);
+        buff1.set_modified(1, Some(0));
         assert_eq!(1, n + 1);
         bm.unpin(idx1);
 
@@ -28,7 +28,7 @@ mod tests {
         let buff2 = bm.buffer(idx2);
         let p2 = buff2.contents();
         p2.set_int(80, 9999);
-        buff2.set_modified(1, 0);
+        buff2.set_modified(1, Some(0));
         bm.unpin(idx2);
 
         fs::remove_dir_all("buffertest").unwrap();

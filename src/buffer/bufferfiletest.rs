@@ -22,7 +22,7 @@ mod tests {
         let size = Page::max_length("abcdefghijklm".len());
         let pos2 = pos1 + size;
         p1.set_int(pos2, 345);
-        b1.set_modified(1, 0);
+        b1.set_modified(1, Some(0));
         bm.unpin(idx1);
 
         let idx2 = bm.pin(&blk).unwrap();
