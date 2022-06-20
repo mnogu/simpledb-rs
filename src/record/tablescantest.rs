@@ -15,7 +15,7 @@ mod tests {
 
     #[test]
     fn tablescantest() {
-        let db = SimpleDB::new("tabletest", 400, 8).unwrap();
+        let db = SimpleDB::with_params("tabletest", 400, 8).unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
 
         let mut sch = Schema::new();

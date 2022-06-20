@@ -9,7 +9,7 @@ mod tests {
 
     #[test]
     fn filetest() {
-        let db = SimpleDB::new("filetest", 400, 8).unwrap();
+        let db = SimpleDB::with_params("filetest", 400, 8).unwrap();
         let fm = db.file_mgr();
 
         let blk = BlockId::new("testfile", 2);

@@ -6,7 +6,7 @@ mod tests {
 
     #[test]
     fn buffertest() {
-        let mut db = SimpleDB::new("buffertest", 400, 3).unwrap();
+        let mut db = SimpleDB::with_params("buffertest", 400, 3).unwrap();
         let m = db.buffer_mgr();
         let mut bm = m.lock().unwrap();
 

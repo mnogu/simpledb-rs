@@ -9,7 +9,7 @@ mod tests {
 
     #[test]
     fn bufferfiletest() {
-        let mut db = SimpleDB::new("bufferfiletest", 400, 8).unwrap();
+        let mut db = SimpleDB::with_params("bufferfiletest", 400, 8).unwrap();
         let m = db.buffer_mgr();
         let mut bm = m.lock().unwrap();
         let blk = BlockId::new("testfile", 2);

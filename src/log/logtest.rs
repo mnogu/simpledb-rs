@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn logtest() {
-        let mut db = SimpleDB::new("logtest", 400, 8).unwrap();
+        let mut db = SimpleDB::with_params("logtest", 400, 8).unwrap();
         let lm = db.log_mgr();
 
         assert_log_records(lm.clone(), Vec::new());

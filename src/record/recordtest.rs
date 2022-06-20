@@ -14,7 +14,7 @@ mod tests {
 
     #[test]
     fn recordtest() {
-        let db = SimpleDB::new("recordtest", 400, 8).unwrap();
+        let db = SimpleDB::with_params("recordtest", 400, 8).unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
 
         let mut sch = Schema::new();

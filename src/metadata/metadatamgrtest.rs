@@ -19,7 +19,7 @@ mod tests {
 
     #[test]
     fn metadatamgrtest() {
-        let db = SimpleDB::new("metadatamgrtest", 400, 8).unwrap();
+        let db = SimpleDB::with_params("metadatamgrtest", 400, 8).unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
         let mut mdm = MetadataMgr::new(true, tx.clone()).unwrap();
 

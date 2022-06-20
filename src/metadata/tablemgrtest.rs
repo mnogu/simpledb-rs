@@ -13,7 +13,7 @@ mod tests {
 
     #[test]
     fn tablemgrtest() {
-        let db = SimpleDB::new("tblmgrtest", 400, 8).unwrap();
+        let db = SimpleDB::with_params("tblmgrtest", 400, 8).unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
         let tm = TableMgr::new(true, tx.clone()).unwrap();
 

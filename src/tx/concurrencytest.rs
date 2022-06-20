@@ -17,7 +17,7 @@ mod tests {
 
     #[test]
     fn concurrencytest() {
-        let mut db = SimpleDB::new("concurrencytest", 400, 8).unwrap();
+        let mut db = SimpleDB::with_params("concurrencytest", 400, 8).unwrap();
         let fm = db.file_mgr();
         let lm = db.log_mgr();
         let bm = db.buffer_mgr();

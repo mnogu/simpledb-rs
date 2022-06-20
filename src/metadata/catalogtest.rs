@@ -12,7 +12,7 @@ mod tests {
 
     #[test]
     fn catalogtest() {
-        let db = SimpleDB::new("catalogtest", 400, 8).unwrap();
+        let db = SimpleDB::with_params("catalogtest", 400, 8).unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
         let tm = TableMgr::new(true, tx.clone()).unwrap();
         let tcat_layout = tm.get_layout("tblcat", tx.clone()).unwrap();

@@ -1,4 +1,4 @@
-use std::fs::{File, OpenOptions};
+use std::fs::{self, File, OpenOptions};
 use std::io::{Read, SeekFrom, Write};
 use std::path::Path;
 use std::{io::Error, io::Seek};
@@ -9,17 +9,28 @@ use super::page::Page;
 pub struct FileMgr {
     db_directory: String,
     blocksize: usize,
+    is_new: bool,
 }
 
 impl FileMgr {
-    pub fn new(db_directory: &str, blocksize: usize) -> FileMgr {
-        if !Path::new(db_directory).exists() {
-            std::fs::create_dir(db_directory).unwrap();
-        }
-        FileMgr {
+    pub fn new(db_directory: &str, blocksize: usize) -> Result<FileMgr, Error> {
+        let is_new = !Path::new(db_directory).exists();
+        let fm = FileMgr {
             db_directory: db_directory.to_string(),
             blocksize,
+            is_new,
+        };
+        if fm.is_new {
+            fs::create_dir_all(db_directory)?;
         }
+
+        for entry in fs::read_dir(db_directory)? {
+            let path = entry?.path();
+            if path.starts_with("temp") {
+                fs::remove_file(path)?;
+            }
+        }
+        Ok(fm)
     }
 
     pub fn read(&self, blk: &BlockId, p: &mut Page) -> Result<(), Error> {
@@ -61,6 +72,10 @@ impl FileMgr {
         let file = self.get_file(filename)?;
         let metadata = file.metadata()?;
         Ok(metadata.len() as usize / self.blocksize)
+    }
+
+    pub fn is_new(&self) -> bool {
+        self.is_new
     }
 
     pub fn block_size(&self) -> usize {

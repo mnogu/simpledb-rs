@@ -13,7 +13,7 @@ mod tests {
 
     #[test]
     fn recoverytest() {
-        let mut db = SimpleDB::new("recoverytest", 400, 8).unwrap();
+        let mut db = SimpleDB::with_params("recoverytest", 400, 8).unwrap();
         let fm = db.file_mgr();
         let bm = db.buffer_mgr();
         let blk0 = BlockId::new("testfile", 0);

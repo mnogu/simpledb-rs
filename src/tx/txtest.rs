@@ -6,7 +6,7 @@ mod tests {
 
     #[test]
     fn txtest() {
-        let mut db = SimpleDB::new("txtest", 400, 8).unwrap();
+        let mut db = SimpleDB::with_params("txtest", 400, 8).unwrap();
         let fm = db.file_mgr();
         let lm = db.log_mgr();
 
