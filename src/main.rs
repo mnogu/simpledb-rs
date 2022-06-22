@@ -4,11 +4,15 @@ use std::{
 };
 
 use query::scan::Scan;
+use rand::{distributions::Uniform, prelude::Distribution};
 use record::{layout::Layout, schema::Schema};
 use server::simpledb::SimpleDB;
 
 use crate::{
-    query::{productscan::ProductScan, updatescan::UpdateScan},
+    query::{
+        contant::Constant, expression::Expression, predicate::Predicate, projectscan::ProjectScan,
+        selectscan::SelectScan, term::Term, updatescan::UpdateScan,
+    },
     record::tablescan::TableScan,
 };
 
@@ -23,48 +27,41 @@ mod server;
 mod tx;
 
 fn main() {
-    let db = SimpleDB::new("producttest").unwrap();
+    let db = SimpleDB::new("scantest1").unwrap();
     let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
 
     let mut sch1 = Schema::new();
     sch1.add_int_field("A");
     sch1.add_string_field("B", 9);
     let layout1 = Arc::new(Layout::new(Arc::new(sch1)));
-    let mut ts1 = TableScan::new(tx.clone(), "T1", layout1.clone()).unwrap();
+    let mut s1 = TableScan::new(tx.clone(), "T", layout1.clone()).unwrap();
 
-    let mut sch2 = Schema::new();
-    sch2.add_int_field("C");
-    sch2.add_string_field("D", 9);
-    let layout2 = Arc::new(Layout::new(Arc::new(sch2)));
-    let mut ts2 = TableScan::new(tx.clone(), "T2", layout2.clone()).unwrap();
-
-    ts1.before_first().unwrap();
+    s1.before_first().unwrap();
     let n = 200;
-    println!("Inserting {} records into T1.", n);
-    for i in 0..n {
-        ts1.insert().unwrap();
-        ts1.set_int("A", i).unwrap();
-        ts1.set_string("B", &format!("aaa{}", i)).unwrap();
+    println!("Inserting {} random records", n);
+    let mut rng = rand::thread_rng();
+    let die = Uniform::from(0..50);
+    for _ in 0..n {
+        s1.insert().unwrap();
+        let k = die.sample(&mut rng);
+        s1.set_int("A", k).unwrap();
+        s1.set_string("B", &format!("rec{}", k)).unwrap();
     }
-    ts1.close().unwrap();
+    s1.close().unwrap();
 
-    ts2.before_first().unwrap();
-    println!("Inserting {} records into T2.", n);
-    for i in 0..n {
-        ts2.insert().unwrap();
-        ts2.set_int("C", n - i - 1).unwrap();
-        ts2.set_string("D", &format!("bbb{}", n - i - 1)).unwrap();
+    let s2 = TableScan::new(tx.clone(), "T", layout1).unwrap();
+    let c = Constant::with_int(10);
+    let t = Term::new(Expression::with_string("A"), Expression::with_constant(c));
+    let pred = Predicate::with_term(t);
+    println!("The predicate is {}", pred);
+    let s3 = SelectScan::new(s2, pred);
+    let fields = vec!["B".to_string()];
+    let mut s4 = ProjectScan::new(s3, fields);
+    while s4.next().unwrap() {
+        println!("{}", s4.get_string("B").unwrap());
     }
-    ts2.close().unwrap();
-
-    let s1 = TableScan::new(tx.clone(), "T1", layout1).unwrap();
-    let s2 = TableScan::new(tx.clone(), "T2", layout2).unwrap();
-    let mut s3 = ProductScan::new(s1, s2).unwrap();
-    while s3.next().unwrap() {
-        println!("{}", s3.get_string("B").unwrap());
-    }
-    s3.close().unwrap();
+    s4.close().unwrap();
     tx.lock().unwrap().commit().unwrap();
 
-    fs::remove_dir_all("producttest").unwrap();
+    fs::remove_dir_all("scantest1").unwrap();
 }

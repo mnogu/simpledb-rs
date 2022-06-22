@@ -1,6 +1,21 @@
+use std::fmt;
+
+#[derive(PartialEq)]
 pub struct Constant {
     ival: Option<i32>,
     sval: Option<String>,
+}
+
+impl fmt::Display for Constant {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(ival) = self.ival {
+            return write!(f, "{}", ival);
+        }
+        if let Some(sval) = &self.sval {
+            return write!(f, "{}", sval);
+        }
+        return write!(f, "");
+    }
 }
 
 impl Constant {
