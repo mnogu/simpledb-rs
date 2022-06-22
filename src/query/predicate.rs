@@ -32,7 +32,7 @@ impl Predicate {
         Predicate { terms }
     }
 
-    pub fn is_satisfied(&self, s: &mut dyn Scan) -> Result<bool, TransactionError> {
+    pub fn is_satisfied<A: Scan>(&self, s: &mut A) -> Result<bool, TransactionError> {
         for t in &self.terms {
             if !t.is_satisfied(s)? {
                 return Ok(false);

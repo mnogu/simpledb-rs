@@ -36,7 +36,7 @@ impl Expression {
         }
     }
 
-    pub fn evaluate(&self, s: &mut dyn Scan) -> Result<Constant, TransactionError> {
+    pub fn evaluate<A: Scan>(&self, s: &mut A) -> Result<Constant, TransactionError> {
         if let Some(val) = &self.val {
             if let Some(ival) = val.as_int() {
                 return Ok(Constant::with_int(ival));
