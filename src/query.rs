@@ -5,6 +5,7 @@ pub mod productscan;
 pub mod projectscan;
 pub mod projecttest;
 pub mod scan;
+pub mod scantest1;
 pub mod selectscan;
 pub mod term;
 pub mod updatescan;
