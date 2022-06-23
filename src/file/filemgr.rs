@@ -49,8 +49,6 @@ impl FileMgr {
             (blk.number() as usize * self.blocksize) as u64,
         ))?;
         f.write_all(p.contents())?;
-        f.sync_all()?;
-
         Ok(())
     }
 
