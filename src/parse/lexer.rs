@@ -56,7 +56,7 @@ impl Token {
 
 impl Lexer {
     pub fn new(s: &str) -> Lexer {
-        let keywords: HashSet<String> = HashSet::from([
+        let keywords = HashSet::from([
             "select", "from", "where", "and", "insert", "into", "values", "delete", "update",
             "set", "create", "table", "int", "varchar", "view", "as", "index", "on",
         ])
