@@ -65,7 +65,7 @@ impl Lexer {
         .collect();
         let mut l = Lexer {
             keywords,
-            chars: s.chars().collect(),
+            chars: s.to_lowercase().chars().collect(),
             i: 0,
             token: None,
         };
