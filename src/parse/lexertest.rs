@@ -6,7 +6,7 @@ mod tests {
     fn lexertest() {
         let ss = vec![
             "a=1", "1=a", "z=1", "1=z", "_=1", "1=_", "A=1", "1=A", "a=-1", "-1=a", " a = 1 ",
-            " 1 = a ",
+            " 1 = a ", "ab=12", "12=ab",
         ];
         let e = vec![
             ("a", 1),
@@ -21,6 +21,8 @@ mod tests {
             ("a", -1),
             ("a", 1),
             ("a", 1),
+            ("ab", 12),
+            ("ab", 12),
         ];
         for (i, s) in ss.iter().enumerate() {
             let mut lex = Lexer::new(&s);
