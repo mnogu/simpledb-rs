@@ -4,11 +4,11 @@ mod tests {
 
     #[test]
     fn lexertest() {
-        let ss = vec![
+        let ss = [
             "a=1", "1=a", "z=1", "1=z", "_=1", "1=_", "A=1", "1=A", "a=-1", "-1=a", " a = 1 ",
             " 1 = a ", "ab=12", "12=ab",
         ];
-        let e = vec![
+        let e = [
             ("a", 1),
             ("a", 1),
             ("z", 1),
