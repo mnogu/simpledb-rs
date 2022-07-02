@@ -93,6 +93,25 @@ impl Lexer {
         false
     }
 
+    pub fn match_string_constant(&self) -> bool {
+        if let Some(token) = &self.token {
+            return token.ttype() == TokenType::StringConstant;
+        }
+        false
+    }
+
+    pub fn match_keyword(&self, w: &str) -> bool {
+        if let Some(token) = &self.token {
+            if token.ttype() != TokenType::Keyword {
+                return false;
+            }
+            if let Some(sval) = token.sval() {
+                return sval == w.to_string();
+            }
+        }
+        false
+    }
+
     pub fn match_id(&self) -> bool {
         if let Some(token) = &self.token {
             return token.ttype() == TokenType::Id;
@@ -119,6 +138,27 @@ impl Lexer {
             }
         }
         Err(BadSyntaxError)
+    }
+
+    pub fn eat_string_constant(&mut self) -> Result<String, BadSyntaxError> {
+        if !self.match_string_constant() {
+            return Err(BadSyntaxError);
+        }
+        if let Some(token) = &self.token {
+            if let Some(s) = token.sval() {
+                self.next_token();
+                return Ok(s);
+            }
+        }
+        Err(BadSyntaxError)
+    }
+
+    pub fn eat_keyword(&mut self, w: &str) -> Result<(), BadSyntaxError> {
+        if !self.match_keyword(w) {
+            return Err(BadSyntaxError);
+        }
+        self.next_token();
+        Ok(())
     }
 
     pub fn eat_id(&mut self) -> Result<String, BadSyntaxError> {

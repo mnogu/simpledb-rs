@@ -32,6 +32,10 @@ impl Predicate {
         Predicate { terms }
     }
 
+    pub fn conjoin_with(&mut self, pred: Predicate) {
+        self.terms.extend(pred.terms)
+    }
+
     pub fn is_satisfied<A: Scan>(&self, s: &mut A) -> Result<bool, TransactionError> {
         for t in &self.terms {
             if !t.is_satisfied(s)? {

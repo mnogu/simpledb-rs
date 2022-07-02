@@ -1,6 +1,6 @@
-use std::io;
+use std::io::{self, Write};
 
-use crate::parse::lexer::Lexer;
+use crate::parse::parser::Parser;
 
 mod buffer;
 mod file;
@@ -16,20 +16,23 @@ mod tx;
 fn main() {
     let mut s = String::new();
     let stdin = io::stdin();
+    print!("Enter an SQL statement: ");
+    io::stdout().flush().unwrap();
     while stdin.read_line(&mut s).unwrap() != 0 {
-        let mut lex = Lexer::new(&s);
-        let x;
-        let y;
-        s = String::new();
-        if lex.match_id() {
-            x = lex.eat_id().unwrap();
-            lex.eat_delim('=').unwrap();
-            y = lex.eat_int_constant().unwrap();
+        let mut p = Parser::new(&s.trim_end());
+        let ok;
+        if s.starts_with("select") {
+            ok = p.query().is_ok();
         } else {
-            y = lex.eat_int_constant().unwrap();
-            lex.eat_delim('=').unwrap();
-            x = lex.eat_id().unwrap();
+            ok = p.update_cmd().is_ok();
         }
-        println!("{} equals {}", x, y);
+        if ok {
+            println!("yes");
+        } else {
+            println!("no");
+        }
+        s = String::new();
+        print!("Enter an SQL statement: ");
+        io::stdout().flush().unwrap();
     }
 }

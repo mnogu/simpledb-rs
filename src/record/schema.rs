@@ -33,6 +33,18 @@ impl Schema {
         self.add_field(fldname, Type::Varchar, length)
     }
 
+    pub fn add(&mut self, fldname: &str, sch: &Schema) {
+        let type_ = sch.type_(fldname);
+        let length = sch.length(fldname);
+        self.add_field(fldname, type_, length)
+    }
+
+    pub fn add_all(&mut self, sch: &Schema) {
+        for fldname in sch.fields() {
+            self.add(fldname, sch)
+        }
+    }
+
     pub fn fields(&self) -> &Vec<String> {
         &self.fields
     }
