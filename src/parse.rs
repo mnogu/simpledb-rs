@@ -8,4 +8,5 @@ pub mod lexer;
 pub mod lexertest;
 pub mod modifydata;
 pub mod parser;
+pub mod parsertest;
 pub mod querydata;
