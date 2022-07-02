@@ -207,6 +207,7 @@ impl Lexer {
                 c = self.chars[self.i];
             }
             self.token = Some(Token::with_string(sval, TokenType::StringConstant));
+            self.i += 1;
             return;
         }
 
