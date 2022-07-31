@@ -238,12 +238,14 @@ impl Lexer {
         }
 
         let mut sval = String::new();
-        while self.is_word_char(self.chars[self.i]) {
+        let mut is_first = true;
+        while self.is_word_char(self.chars[self.i], is_first) {
             sval.push(self.chars[self.i]);
             self.i += 1;
             if self.i >= self.chars.len() {
                 break;
             }
+            is_first = false;
         }
         if sval.len() != 0 {
             if self.keywords.contains(&sval) {
@@ -274,14 +276,15 @@ impl Lexer {
         c >= '0' && c <= '9'
     }
 
-    fn is_word_char(&self, c: char) -> bool {
+    fn is_word_char(&self, c: char, is_first: bool) -> bool {
         c >= 'a' && c <= 'z'
             || c >= 'A' && c <= 'Z'
             || c >= '\u{00A0}' && c <= '\u{00FF}'
             || c == '_'
+            || (!is_first && self.is_number(c))
     }
 
     fn is_delim_char(&self, c: char) -> bool {
-        !self.is_whitespce_char(c) && !self.is_number(c) && !self.is_word_char(c)
+        !self.is_whitespce_char(c) && !self.is_number(c) && !self.is_word_char(c, true)
     }
 }
