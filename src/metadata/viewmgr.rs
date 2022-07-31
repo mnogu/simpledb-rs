@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    query::{scan::Scan, updatescan::UpdateScan},
+    query::{scan::ScanControl, updatescan::UpdateScanControl},
     record::{schema::Schema, tablescan::TableScan},
     tx::transaction::{Transaction, TransactionError},
 };
@@ -48,17 +48,17 @@ impl ViewMgr {
         &self,
         vname: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<String, TransactionError> {
+    ) -> Result<Option<String>, TransactionError> {
         let layout = self.tbl_mgr.get_layout("viewcat", tx.clone())?;
         let mut ts = TableScan::new(tx, "viewcat", Arc::new(layout))?;
         while ts.next()? {
             if ts.get_string("viewname")? == vname {
                 let result = ts.get_string("viewdef")?;
                 ts.close()?;
-                return Ok(result);
+                return Ok(Some(result));
             }
         }
         ts.close()?;
-        Err(TransactionError::General)
+        Ok(None)
     }
 }

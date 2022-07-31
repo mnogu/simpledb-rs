@@ -64,7 +64,7 @@ impl MetadataMgr {
         &self,
         viewname: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<String, TransactionError> {
+    ) -> Result<Option<String>, TransactionError> {
         self.viewmgr.get_view_def(viewname, tx)
     }
 

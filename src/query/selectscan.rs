@@ -1,18 +1,19 @@
+use std::sync::Arc;
+
 use crate::{buffer::buffermgr::AbortError, record::rid::Rid, tx::transaction::TransactionError};
 
-use super::{contant::Constant, predicate::Predicate, scan::Scan, updatescan::UpdateScan};
-pub struct SelectScan<A>
-where
-    A: Scan,
-{
-    s: A,
-    pred: Predicate,
+use super::{
+    contant::Constant,
+    predicate::Predicate,
+    scan::{Scan, ScanControl},
+    updatescan::UpdateScanControl,
+};
+pub struct SelectScan {
+    s: Box<Scan>,
+    pred: Arc<Predicate>,
 }
 
-impl<A> Scan for SelectScan<A>
-where
-    A: Scan,
-{
+impl ScanControl for SelectScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.s.before_first()
     }
@@ -47,44 +48,69 @@ where
     }
 }
 
-impl<A> UpdateScan for SelectScan<A>
-where
-    A: UpdateScan,
-{
+impl UpdateScanControl for SelectScan {
     fn set_val(&mut self, fldname: &str, val: Constant) -> Result<(), TransactionError> {
-        self.s.set_val(fldname, val)
+        match &mut *self.s {
+            Scan::Select(scan) => scan.set_val(fldname, val),
+            Scan::Table(scan) => scan.set_val(fldname, val),
+            _ => Ok(()),
+        }
     }
 
     fn set_int(&mut self, fldname: &str, val: i32) -> Result<(), TransactionError> {
-        self.s.set_int(fldname, val)
+        match &mut *self.s {
+            Scan::Select(scan) => scan.set_int(fldname, val),
+            Scan::Table(scan) => scan.set_int(fldname, val),
+            _ => Ok(()),
+        }
     }
 
     fn set_string(&mut self, fldname: &str, val: &str) -> Result<(), TransactionError> {
-        self.s.set_string(fldname, val)
+        match &mut *self.s {
+            Scan::Select(scan) => scan.set_string(fldname, val),
+            Scan::Table(scan) => scan.set_string(fldname, val),
+            _ => Ok(()),
+        }
     }
 
     fn insert(&mut self) -> Result<(), TransactionError> {
-        self.s.insert()
+        match &mut *self.s {
+            Scan::Select(scan) => scan.insert(),
+            Scan::Table(scan) => scan.insert(),
+            _ => Ok(()),
+        }
     }
 
     fn delete(&mut self) -> Result<(), TransactionError> {
-        self.s.delete()
+        match &mut *self.s {
+            Scan::Select(scan) => scan.delete(),
+            Scan::Table(scan) => scan.delete(),
+            _ => Ok(()),
+        }
     }
 
     fn get_rid(&self) -> Option<Rid> {
-        self.s.get_rid()
+        match &*self.s {
+            Scan::Select(scan) => scan.get_rid(),
+            Scan::Table(scan) => scan.get_rid(),
+            _ => None,
+        }
     }
 
     fn move_to_rid(&mut self, rid: &Rid) -> Result<(), TransactionError> {
-        self.s.move_to_rid(rid)
+        match &mut *self.s {
+            Scan::Select(scan) => scan.move_to_rid(rid),
+            Scan::Table(scan) => scan.move_to_rid(rid),
+            _ => Ok(()),
+        }
     }
 }
 
-impl<A> SelectScan<A>
-where
-    A: Scan,
-{
-    pub fn new(s: A, pred: Predicate) -> SelectScan<A> {
-        SelectScan { s, pred }
+impl SelectScan {
+    pub fn new(s: Scan, pred: Arc<Predicate>) -> SelectScan {
+        SelectScan {
+            s: Box::new(s),
+            pred,
+        }
     }
 }

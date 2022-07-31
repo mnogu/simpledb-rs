@@ -8,8 +8,8 @@ mod tests {
     use crate::{
         query::{
             expression::Expression, predicate::Predicate, productscan::ProductScan,
-            projectscan::ProjectScan, scan::Scan, selectscan::SelectScan, term::Term,
-            updatescan::UpdateScan,
+            projectscan::ProjectScan, scan::ScanControl, selectscan::SelectScan, term::Term,
+            updatescan::UpdateScanControl,
         },
         record::{layout::Layout, schema::Schema, tablescan::TableScan},
         server::simpledb::SimpleDB,
@@ -49,15 +49,15 @@ mod tests {
 
         let s1 = TableScan::new(tx.clone(), "T1", layout1).unwrap();
         let s2 = TableScan::new(tx.clone(), "T2", layout2).unwrap();
-        let s3 = ProductScan::new(s1, s2).unwrap();
+        let s3 = ProductScan::new(s1.into(), s2.into()).unwrap();
 
         let t = Term::new(Expression::with_string("A"), Expression::with_string("C"));
         let pred = Predicate::with_term(t);
         assert_eq!(format!("{}", pred), "A=C");
-        let s4 = SelectScan::new(s3, pred);
+        let s4 = SelectScan::new(s3.into(), Arc::new(pred));
 
         let c = vec!["B".to_string(), "D".to_string()];
-        let mut s5 = ProjectScan::new(s4, c);
+        let mut s5 = ProjectScan::new(s4.into(), c);
         let mut count = 0;
         while s5.next().unwrap() {
             assert_eq!(s5.get_string("B").unwrap(), format!("bbb{}", count));

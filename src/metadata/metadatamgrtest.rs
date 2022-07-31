@@ -9,7 +9,7 @@ mod tests {
 
     use crate::{
         metadata::metadatamgr::MetadataMgr,
-        query::updatescan::UpdateScan,
+        query::updatescan::UpdateScanControl,
         record::{
             schema::{Schema, Type},
             tablescan::TableScan,
@@ -61,7 +61,7 @@ mod tests {
         let viewdef = "select B from MyTable where A = 1";
         mdm.create_view("viewA", viewdef, tx.clone()).unwrap();
         let v = mdm.get_view_def("viewA", tx.clone()).unwrap();
-        assert_eq!(v, "select B from MyTable where A = 1");
+        assert_eq!(v, Some("select B from MyTable where A = 1".to_string()));
 
         mdm.create_index("indexA", "MyTable", "A", tx.clone())
             .unwrap();

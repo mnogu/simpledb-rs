@@ -1,4 +1,4 @@
-use super::parser::Object;
+use super::parser::ObjectControl;
 
 pub struct CreateIndexData {
     idxname: String,
@@ -14,6 +14,18 @@ impl CreateIndexData {
             fldname: fldname.to_string(),
         }
     }
+
+    pub fn index_name(&self) -> String {
+        self.idxname.clone()
+    }
+
+    pub fn table_name(&self) -> String {
+        self.tblname.clone()
+    }
+
+    pub fn field_name(&self) -> String {
+        self.fldname.clone()
+    }
 }
 
-impl Object for CreateIndexData {}
+impl ObjectControl for CreateIndexData {}

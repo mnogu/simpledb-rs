@@ -8,7 +8,7 @@ mod tests {
     use rand::{distributions::Uniform, prelude::Distribution};
 
     use crate::{
-        query::{scan::Scan, updatescan::UpdateScan},
+        query::{scan::ScanControl, updatescan::UpdateScanControl},
         record::{layout::Layout, schema::Schema, tablescan::TableScan},
         server::simpledb::SimpleDB,
     };

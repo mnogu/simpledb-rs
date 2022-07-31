@@ -1,21 +1,16 @@
 use crate::{buffer::buffermgr::AbortError, tx::transaction::TransactionError};
 
-use super::{contant::Constant, scan::Scan};
+use super::{
+    contant::Constant,
+    scan::{Scan, ScanControl},
+};
 
-pub struct ProductScan<A, B>
-where
-    A: Scan,
-    B: Scan,
-{
-    s1: A,
-    s2: B,
+pub struct ProductScan {
+    s1: Box<Scan>,
+    s2: Box<Scan>,
 }
 
-impl<A, B> Scan for ProductScan<A, B>
-where
-    A: Scan,
-    B: Scan,
-{
+impl ScanControl for ProductScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.s1.before_first()?;
         self.s1.next()?;
@@ -63,13 +58,12 @@ where
     }
 }
 
-impl<A, B> ProductScan<A, B>
-where
-    A: Scan,
-    B: Scan,
-{
-    pub fn new(s1: A, s2: B) -> Result<ProductScan<A, B>, TransactionError> {
-        let mut ps = ProductScan { s1, s2 };
+impl ProductScan {
+    pub fn new(s1: Scan, s2: Scan) -> Result<ProductScan, TransactionError> {
+        let mut ps = ProductScan {
+            s1: Box::new(s1),
+            s2: Box::new(s2),
+        };
         ps.before_first()?;
         Ok(ps)
     }

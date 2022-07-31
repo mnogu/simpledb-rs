@@ -1,6 +1,6 @@
 use crate::query::contant::Constant;
 
-use super::parser::Object;
+use super::parser::ObjectControl;
 
 pub struct InsertData {
     tblname: String,
@@ -16,6 +16,18 @@ impl InsertData {
             vals,
         }
     }
+
+    pub fn table_name(&self) -> String {
+        self.tblname.clone()
+    }
+
+    pub fn fields(&self) -> Vec<String> {
+        self.flds.clone()
+    }
+
+    pub fn vals(&self) -> Vec<Constant> {
+        self.vals.clone()
+    }
 }
 
-impl Object for InsertData {}
+impl ObjectControl for InsertData {}

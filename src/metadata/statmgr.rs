@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    query::{scan::Scan, updatescan::UpdateScan},
+    query::{scan::ScanControl, updatescan::UpdateScanControl},
     record::{layout::Layout, tablescan::TableScan},
     tx::transaction::{Transaction, TransactionError},
 };

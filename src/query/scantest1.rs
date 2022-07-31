@@ -10,8 +10,8 @@ mod tests {
     use crate::{
         query::{
             contant::Constant, expression::Expression, predicate::Predicate,
-            projectscan::ProjectScan, scan::Scan, selectscan::SelectScan, term::Term,
-            updatescan::UpdateScan,
+            projectscan::ProjectScan, scan::ScanControl, selectscan::SelectScan, term::Term,
+            updatescan::UpdateScanControl,
         },
         record::{layout::Layout, schema::Schema, tablescan::TableScan},
         server::simpledb::SimpleDB,
@@ -45,9 +45,9 @@ mod tests {
         let t = Term::new(Expression::with_string("A"), Expression::with_constant(c));
         let pred = Predicate::with_term(t);
         assert_eq!(format!("{}", pred), "A=10");
-        let s3 = SelectScan::new(s2, pred);
+        let s3 = SelectScan::new(s2.into(), Arc::new(pred));
         let fields = vec!["B".to_string()];
-        let mut s4 = ProjectScan::new(s3, fields);
+        let mut s4 = ProjectScan::new(s3.into(), fields);
         let mut count = 0;
         while s4.next().unwrap() {
             assert_eq!(s4.get_string("B").unwrap(), "rec10");

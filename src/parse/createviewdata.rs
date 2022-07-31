@@ -1,4 +1,4 @@
-use super::{parser::Object, querydata::QueryData};
+use super::{parser::ObjectControl, querydata::QueryData};
 
 pub struct CreateViewData {
     viewname: String,
@@ -12,6 +12,14 @@ impl CreateViewData {
             qry_data,
         }
     }
+
+    pub fn view_name(&self) -> String {
+        self.viewname.clone()
+    }
+
+    pub fn view_def(&self) -> String {
+        format!("{}", self.qry_data)
+    }
 }
 
-impl Object for CreateViewData {}
+impl ObjectControl for CreateViewData {}

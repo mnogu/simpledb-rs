@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub struct Constant {
     ival: Option<i32>,
     sval: Option<String>,

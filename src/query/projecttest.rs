@@ -6,7 +6,7 @@ mod tests {
     };
 
     use crate::{
-        query::{productscan::ProductScan, scan::Scan, updatescan::UpdateScan},
+        query::{productscan::ProductScan, scan::ScanControl, updatescan::UpdateScanControl},
         record::{layout::Layout, schema::Schema, tablescan::TableScan},
         server::simpledb::SimpleDB,
     };
@@ -47,7 +47,7 @@ mod tests {
 
         let s1 = TableScan::new(tx.clone(), "T1", layout1).unwrap();
         let s2 = TableScan::new(tx.clone(), "T2", layout2).unwrap();
-        let mut s3 = ProductScan::new(s1, s2).unwrap();
+        let mut s3 = ProductScan::new(s1.into(), s2.into()).unwrap();
         let mut count = 0;
         while s3.next().unwrap() {
             assert_eq!(format!("aaa{}", count / n), s3.get_string("B").unwrap());

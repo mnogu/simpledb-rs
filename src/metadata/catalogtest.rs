@@ -6,7 +6,7 @@ mod tests {
     };
 
     use crate::{
-        metadata::tablemgr::TableMgr, query::scan::Scan, record::tablescan::TableScan,
+        metadata::tablemgr::TableMgr, query::scan::ScanControl, record::tablescan::TableScan,
         server::simpledb::SimpleDB,
     };
 

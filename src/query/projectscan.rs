@@ -1,19 +1,16 @@
 use crate::tx::transaction::TransactionError;
 
-use super::{contant::Constant, scan::Scan};
+use super::{
+    contant::Constant,
+    scan::{Scan, ScanControl},
+};
 
-pub struct ProjectScan<A>
-where
-    A: Scan,
-{
-    s: A,
+pub struct ProjectScan {
+    s: Box<Scan>,
     fieldlist: Vec<String>,
 }
 
-impl<A> Scan for ProjectScan<A>
-where
-    A: Scan,
-{
+impl ScanControl for ProjectScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         self.s.before_first()
     }
@@ -52,11 +49,11 @@ where
     }
 }
 
-impl<A> ProjectScan<A>
-where
-    A: Scan,
-{
-    pub fn new(s: A, fieldlist: Vec<String>) -> ProjectScan<A> {
-        ProjectScan { s, fieldlist }
+impl ProjectScan {
+    pub fn new(s: Scan, fieldlist: Vec<String>) -> ProjectScan {
+        ProjectScan {
+            s: Box::new(s),
+            fieldlist,
+        }
     }
 }

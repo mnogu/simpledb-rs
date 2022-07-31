@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     buffer::buffermgr::AbortError,
     file::blockid::BlockId,
-    query::{contant::Constant, scan::Scan, updatescan::UpdateScan},
+    query::{contant::Constant, scan::ScanControl, updatescan::UpdateScanControl},
     tx::transaction::{Transaction, TransactionError},
 };
 
@@ -17,7 +17,7 @@ pub struct TableScan {
     currentslot: Option<usize>,
 }
 
-impl Scan for TableScan {
+impl ScanControl for TableScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
         Ok(self.move_to_block(0)?)
     }
@@ -87,7 +87,7 @@ impl Scan for TableScan {
     }
 }
 
-impl UpdateScan for TableScan {
+impl UpdateScanControl for TableScan {
     fn set_val(&mut self, fldname: &str, val: Constant) -> Result<(), TransactionError> {
         match self.layout.schema().type_(fldname) {
             Type::Integer => {

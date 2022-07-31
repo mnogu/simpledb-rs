@@ -20,7 +20,7 @@ impl Term {
         Term { lhs, rhs }
     }
 
-    pub fn is_satisfied<A: Scan>(&self, s: &mut A) -> Result<bool, TransactionError> {
+    pub fn is_satisfied(&self, s: &mut Scan) -> Result<bool, TransactionError> {
         let lhsval = self.lhs.evaluate(s)?;
         let rhsval = self.rhs.evaluate(s)?;
         Ok(lhsval == rhsval)

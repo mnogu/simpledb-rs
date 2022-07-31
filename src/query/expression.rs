@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::tx::transaction::TransactionError;
 
-use super::{contant::Constant, scan::Scan};
+use super::{contant::Constant, scan::ScanControl};
 
 pub struct Expression {
     val: Option<Constant>,
@@ -36,14 +36,9 @@ impl Expression {
         }
     }
 
-    pub fn evaluate<A: Scan>(&self, s: &mut A) -> Result<Constant, TransactionError> {
+    pub fn evaluate<T: ScanControl>(&self, s: &mut T) -> Result<Constant, TransactionError> {
         if let Some(val) = &self.val {
-            if let Some(ival) = val.as_int() {
-                return Ok(Constant::with_int(ival));
-            }
-            if let Some(sval) = val.as_string() {
-                return Ok(Constant::with_string(&sval));
-            }
+            return Ok(val.clone());
         }
         if let Some(fldname) = &self.fldname {
             return Ok(s.get_val(fldname)?);

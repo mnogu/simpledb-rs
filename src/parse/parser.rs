@@ -9,7 +9,52 @@ use super::{
     insertdata::InsertData, lexer::Lexer, modifydata::ModifyData, querydata::QueryData,
 };
 
-pub trait Object {}
+pub trait ObjectControl {}
+
+pub enum Object {
+    Insert(InsertData),
+    Delete(DeleteData),
+    Modify(ModifyData),
+    CreateTable(CreateTableData),
+    CreateView(CreateViewData),
+    CreateIndex(CreateIndexData),
+}
+
+impl From<InsertData> for Object {
+    fn from(d: InsertData) -> Self {
+        Object::Insert(d)
+    }
+}
+
+impl From<DeleteData> for Object {
+    fn from(d: DeleteData) -> Self {
+        Object::Delete(d)
+    }
+}
+
+impl From<ModifyData> for Object {
+    fn from(d: ModifyData) -> Self {
+        Object::Modify(d)
+    }
+}
+
+impl From<CreateTableData> for Object {
+    fn from(d: CreateTableData) -> Self {
+        Object::CreateTable(d)
+    }
+}
+
+impl From<CreateViewData> for Object {
+    fn from(d: CreateViewData) -> Self {
+        Object::CreateView(d)
+    }
+}
+
+impl From<CreateIndexData> for Object {
+    fn from(d: CreateIndexData) -> Self {
+        Object::CreateIndex(d)
+    }
+}
 
 pub struct Parser {
     lex: Lexer,
@@ -86,25 +131,25 @@ impl Parser {
         Ok(l)
     }
 
-    pub fn update_cmd(&mut self) -> Result<Box<dyn Object>, BadSyntaxError> {
+    pub fn update_cmd(&mut self) -> Result<Object, BadSyntaxError> {
         if self.lex.match_keyword("insert") {
-            return Ok(Box::new(self.insert()?));
+            return Ok(self.insert()?.into());
         } else if self.lex.match_keyword("delete") {
-            return Ok(Box::new(self.delete()?));
+            return Ok(self.delete()?.into());
         } else if self.lex.match_keyword("update") {
-            return Ok(Box::new(self.modify()?));
+            return Ok(self.modify()?.into());
         }
         self.create()
     }
 
-    fn create(&mut self) -> Result<Box<dyn Object>, BadSyntaxError> {
+    fn create(&mut self) -> Result<Object, BadSyntaxError> {
         self.lex.eat_keyword("create")?;
         if self.lex.match_keyword("table") {
-            return Ok(Box::new(self.create_table()?));
+            return Ok(self.create_table()?.into());
         } else if self.lex.match_keyword("view") {
-            return Ok(Box::new(self.create_view()?));
+            return Ok(self.create_view()?.into());
         }
-        Ok(Box::new(self.create_index()?))
+        Ok(self.create_index()?.into())
     }
 
     pub fn delete(&mut self) -> Result<DeleteData, BadSyntaxError> {
