@@ -10,17 +10,17 @@ use crate::{
 
 use super::{
     plan::{Plan, PlanError},
-    queryplanner::QueryPlanner,
-    updateplanner::UpdatePlanner,
+    queryplanner::{QueryPlanner, QueryPlannerControl},
+    updateplanner::{UpdatePlanner, UpdatePlannerControl},
 };
 
 pub struct Planner {
-    qplanner: Box<dyn QueryPlanner>,
-    uplanner: Box<dyn UpdatePlanner>,
+    qplanner: QueryPlanner,
+    uplanner: UpdatePlanner,
 }
 
 impl Planner {
-    pub fn new(qplanner: Box<dyn QueryPlanner>, uplanner: Box<dyn UpdatePlanner>) -> Planner {
+    pub fn new(qplanner: QueryPlanner, uplanner: UpdatePlanner) -> Planner {
         Planner { qplanner, uplanner }
     }
 

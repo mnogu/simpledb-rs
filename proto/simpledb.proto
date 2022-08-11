@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package simpledb;
+
+service Connection {
+    rpc Close (CloseConnectionRequest) returns (CloseConnectionReply) {}
+    rpc Commit (CommitRequest) returns (CommitReply) {}
+    rpc Rollback (RollbackRequest) returns (RollbackReply) {}
+}
+
+message CloseConnectionRequest {}
+message CloseConnectionReply {}
+
+message CommitRequest {}
+message CommitReply {}
+
+message RollbackRequest {}
+message RollbackReply {}
+
+
+service MetaData {
+    rpc GetColumnCount (GetColumnCountRequest) returns (GetColumnCountReply) {}
+    rpc GetColumnName (GetColumnNameRequest) returns (GetColumnNameReply) {}
+    rpc GetColumnType (GetColumnTypeRequest) returns (GetColumnTypeReply) {}
+    rpc GetColumnDisplaySize (GetColumnDisplaySizeRequest) returns (GetColumnDisplaySizeReply) {}
+}
+
+message GetColumnCountRequest {
+    uint64 id = 1;
+}
+message GetColumnCountReply {
+    uint64 count = 1;
+}
+
+message GetColumnNameRequest {
+    uint64 id = 1;
+    uint64 index = 2;
+}
+message GetColumnNameReply {
+    string name = 1;
+}
+
+message GetColumnTypeRequest {
+    uint64 id = 1;
+    uint64 index = 2;
+}
+enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TYPE_INTEGER = 4;
+    TYPE_VARCHAR = 12;
+
+}
+message GetColumnTypeReply {
+    Type type = 1;
+}
+
+message GetColumnDisplaySizeRequest {
+    uint64 id = 1;
+    uint64 index = 2;
+}
+message GetColumnDisplaySizeReply {
+    uint64 size = 1;
+}
+
+service ResultSet {
+    rpc Next (NextRequest) returns (NextReply) {}
+    rpc GetInt (GetIntRequest) returns (GetIntReply) {}
+    rpc GetString (GetStringRequest) returns (GetStringReply) {}
+    rpc Close(CloseResultSetRequest) returns (CloseResultSetReply) {}
+}
+
+message NextRequest {
+    uint64 id = 1;
+}
+message NextReply {
+    bool has_next = 1;
+}
+
+message GetIntRequest {
+    uint64 id = 1;
+    string name = 2;
+}
+message GetIntReply {
+    int32 value = 1;
+}
+
+message GetStringRequest {
+    uint64 id = 1;
+    string name = 2;
+}
+message GetStringReply {
+    string value = 1;
+}
+
+message CloseResultSetRequest {
+    uint64 id = 1;
+}
+message CloseResultSetReply {
+}
+
+service Statement {
+    rpc ExecuteQuery (ExecuteQueryRequest) returns (ExecuteQueryReply) {}
+    rpc ExecuteUpdate (ExecuteUpdateRequest) returns (ExecuteUpdateReply) {}
+}
+
+message ExecuteQueryRequest {
+    string query = 1;
+}
+message ExecuteQueryReply {
+    uint64 id = 1;
+}
+
+message ExecuteUpdateRequest {
+    string command = 1;
+}
+message ExecuteUpdateReply {
+    uint64 count = 1;
+}

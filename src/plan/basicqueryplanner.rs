@@ -10,7 +10,7 @@ use super::{
     plan::{Plan, PlanError},
     productplan::ProductPlan,
     projectplan::ProjectPlan,
-    queryplanner::QueryPlanner,
+    queryplanner::QueryPlannerControl,
     selectplan::SelectPlan,
     tableplan::TablePlan,
 };
@@ -25,7 +25,7 @@ impl BasicQueryPlanner {
     }
 }
 
-impl QueryPlanner for BasicQueryPlanner {
+impl QueryPlannerControl for BasicQueryPlanner {
     fn create_plan(
         &self,
         data: QueryData,

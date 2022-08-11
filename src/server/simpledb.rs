@@ -49,8 +49,8 @@ impl SimpleDB {
             tx.lock().unwrap().recover()?;
         }
         let mdm = Arc::new(Mutex::new(MetadataMgr::new(isnew, tx.clone())?));
-        let qp = Box::new(BasicQueryPlanner::new(mdm.clone()));
-        let up = Box::new(BasicUpdatePlanner::new(mdm));
+        let qp = BasicQueryPlanner::new(mdm.clone()).into();
+        let up = BasicUpdatePlanner::new(mdm).into();
         let planner = Planner::new(qp, up);
         sd.planner = Some(Arc::new(planner));
         tx.lock().unwrap().commit()?;

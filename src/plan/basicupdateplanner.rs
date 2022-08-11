@@ -15,7 +15,7 @@ use crate::{
 };
 
 use super::{
-    plan::Plan, selectplan::SelectPlan, tableplan::TablePlan, updateplanner::UpdatePlanner,
+    plan::Plan, selectplan::SelectPlan, tableplan::TablePlan, updateplanner::UpdatePlannerControl,
 };
 
 pub struct BasicUpdatePlanner {
@@ -28,7 +28,7 @@ impl BasicUpdatePlanner {
     }
 }
 
-impl UpdatePlanner for BasicUpdatePlanner {
+impl UpdatePlannerControl for BasicUpdatePlanner {
     fn execute_delete(
         &self,
         data: &DeleteData,
