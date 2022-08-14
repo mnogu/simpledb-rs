@@ -2,6 +2,10 @@
 
 [SimpleDB](http://cs.bc.edu/~sciore/simpledb/) re-written in Rust.
 
+## Requirements
+
+* `protoc` >= 3
+
 ## Status
 
 - [x] Disk and File Management
