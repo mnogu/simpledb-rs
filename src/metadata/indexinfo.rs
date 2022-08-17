@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    index::hash::hashindex::HashIndex,
+    index::{hash::hashindex::HashIndex, index::Index},
     record::{
         layout::Layout,
         schema::{Schema, Type},
@@ -16,7 +16,7 @@ pub struct IndexInfo {
     fldname: String,
     tx: Arc<Mutex<Transaction>>,
     tbl_schema: Arc<Schema>,
-    idx_layout: Layout,
+    idx_layout: Arc<Layout>,
     si: StatInfo,
 }
 
@@ -42,7 +42,7 @@ impl IndexInfo {
         tx: Arc<Mutex<Transaction>>,
         si: StatInfo,
     ) -> IndexInfo {
-        let idx_layout = create_idx_layout(fldname, &tbl_schema);
+        let idx_layout = Arc::new(create_idx_layout(fldname, &tbl_schema));
         IndexInfo {
             idxname: idxname.to_string(),
             fldname: fldname.to_string(),
@@ -51,6 +51,10 @@ impl IndexInfo {
             idx_layout,
             si,
         }
+    }
+
+    pub fn open(&self) -> Index {
+        HashIndex::new(self.tx.clone(), &self.idxname, self.idx_layout.clone()).into()
     }
 
     pub fn blocks_accessed(&self) -> usize {

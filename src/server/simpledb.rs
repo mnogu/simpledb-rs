@@ -3,10 +3,10 @@ use std::sync::{Arc, Mutex};
 
 use crate::buffer::buffermgr::BufferMgr;
 use crate::file::filemgr::FileMgr;
+use crate::index::planner::indexupdateplanner::IndexUpdatePlanner;
 use crate::log::logmgr::LogMgr;
 use crate::metadata::metadatamgr::MetadataMgr;
 use crate::plan::basicqueryplanner::BasicQueryPlanner;
-use crate::plan::basicupdateplanner::BasicUpdatePlanner;
 use crate::plan::planner::Planner;
 use crate::tx::transaction::{Transaction, TransactionError};
 
@@ -14,6 +14,7 @@ pub struct SimpleDB {
     fm: Arc<FileMgr>,
     lm: Arc<Mutex<LogMgr>>,
     bm: Arc<Mutex<BufferMgr>>,
+    mdm: Option<Arc<Mutex<MetadataMgr>>>,
     planner: Option<Arc<Planner>>,
 }
 
@@ -34,6 +35,7 @@ impl SimpleDB {
             fm,
             lm,
             bm,
+            mdm: None,
             planner: None,
         })
     }
@@ -50,8 +52,9 @@ impl SimpleDB {
         }
         let mdm = Arc::new(Mutex::new(MetadataMgr::new(isnew, tx.clone())?));
         let qp = BasicQueryPlanner::new(mdm.clone()).into();
-        let up = BasicUpdatePlanner::new(mdm).into();
+        let up = IndexUpdatePlanner::new(mdm.clone()).into();
         let planner = Planner::new(qp, up);
+        sd.mdm = Some(mdm);
         sd.planner = Some(Arc::new(planner));
         tx.lock().unwrap().commit()?;
         Ok(sd)
@@ -59,6 +62,10 @@ impl SimpleDB {
 
     pub fn new_tx(&self) -> Result<Transaction, Error> {
         Transaction::new(self.fm.clone(), self.lm.clone(), self.bm.clone())
+    }
+
+    pub fn md_mgr(&self) -> Option<Arc<Mutex<MetadataMgr>>> {
+        self.mdm.clone()
     }
 
     pub fn planner(&self) -> Option<Arc<Planner>> {

@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
+    index::planner::indexupdateplanner::IndexUpdatePlanner,
     parse::{
         createindexdata::CreateIndexData, createtabledata::CreateTableData,
         createviewdata::CreateViewData, deletedata::DeleteData, insertdata::InsertData,
@@ -51,11 +52,18 @@ pub trait UpdatePlannerControl {
 
 pub enum UpdatePlanner {
     Basic(BasicUpdatePlanner),
+    Index(IndexUpdatePlanner),
 }
 
 impl From<BasicUpdatePlanner> for UpdatePlanner {
     fn from(p: BasicUpdatePlanner) -> Self {
         UpdatePlanner::Basic(p)
+    }
+}
+
+impl From<IndexUpdatePlanner> for UpdatePlanner {
+    fn from(p: IndexUpdatePlanner) -> Self {
+        UpdatePlanner::Index(p)
     }
 }
 
@@ -67,6 +75,7 @@ impl UpdatePlannerControl for UpdatePlanner {
     ) -> Result<usize, TransactionError> {
         match self {
             UpdatePlanner::Basic(planner) => planner.execute_insert(data, tx),
+            UpdatePlanner::Index(planner) => planner.execute_insert(data, tx),
         }
     }
 
@@ -77,6 +86,7 @@ impl UpdatePlannerControl for UpdatePlanner {
     ) -> Result<usize, TransactionError> {
         match self {
             UpdatePlanner::Basic(planner) => planner.execute_delete(data, tx),
+            UpdatePlanner::Index(planner) => planner.execute_delete(data, tx),
         }
     }
 
@@ -87,6 +97,7 @@ impl UpdatePlannerControl for UpdatePlanner {
     ) -> Result<usize, TransactionError> {
         match self {
             UpdatePlanner::Basic(planner) => planner.execute_modify(data, tx),
+            UpdatePlanner::Index(planner) => planner.execute_modify(data, tx),
         }
     }
 
@@ -97,6 +108,7 @@ impl UpdatePlannerControl for UpdatePlanner {
     ) -> Result<usize, TransactionError> {
         match self {
             UpdatePlanner::Basic(planner) => planner.execute_create_table(data, tx),
+            UpdatePlanner::Index(planner) => planner.execute_create_table(data, tx),
         }
     }
 
@@ -107,6 +119,7 @@ impl UpdatePlannerControl for UpdatePlanner {
     ) -> Result<usize, TransactionError> {
         match self {
             UpdatePlanner::Basic(planner) => planner.execute_create_view(data, tx),
+            UpdatePlanner::Index(planner) => planner.execute_create_view(data, tx),
         }
     }
 
@@ -117,6 +130,7 @@ impl UpdatePlannerControl for UpdatePlanner {
     ) -> Result<usize, TransactionError> {
         match self {
             UpdatePlanner::Basic(planner) => planner.execute_create_index(data, tx),
+            UpdatePlanner::Index(planner) => planner.execute_create_index(data, tx),
         }
     }
 }
