@@ -37,7 +37,7 @@ impl StatementControl for EmbeddedStatement {
         let tx = conn.get_transaction();
         if let Some(planner) = conn.planner() {
             if let Ok(result) = planner.execute_update(cmd, tx) {
-                if let Ok(_) = conn.commit() {
+                if conn.commit().is_ok() {
                     return Ok(result);
                 }
             }
