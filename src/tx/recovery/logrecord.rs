@@ -8,7 +8,7 @@ use super::{
     setintrecord::SetIntRecord, setstringrecord::SetStringRecord, startrecord::StartRecord,
 };
 
-#[derive(PartialEq)]
+#[derive(Eq, PartialEq)]
 pub enum Op {
     CheckPoint = 0,
     Start = 1,
