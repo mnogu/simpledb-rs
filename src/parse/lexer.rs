@@ -247,7 +247,7 @@ impl Lexer {
             }
             is_first = false;
         }
-        if sval.len() != 0 {
+        if !sval.is_empty() {
             if self.keywords.contains(&sval) {
                 self.token = Some(Token::with_string(sval, TokenType::Keyword));
                 return;
