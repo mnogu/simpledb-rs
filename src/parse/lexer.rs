@@ -106,7 +106,7 @@ impl Lexer {
                 return false;
             }
             if let Some(sval) = token.sval() {
-                return sval == w.to_string();
+                return sval == *w;
             }
         }
         false
