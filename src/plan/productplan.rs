@@ -31,7 +31,7 @@ impl Plan for ProductPlan {
     fn open(&self) -> Result<Scan, TransactionError> {
         let s1 = self.p1.open()?;
         let s2 = self.p2.open()?;
-        Ok(ProductScan::new(s1.into(), s2.into())?.into())
+        Ok(ProductScan::new(s1, s2)?.into())
     }
 
     fn schema(&self) -> Arc<Schema> {
