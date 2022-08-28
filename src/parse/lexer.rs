@@ -269,17 +269,17 @@ impl Lexer {
     }
 
     fn is_whitespce_char(&self, c: char) -> bool {
-        c >= '\u{0000}' && c <= '\u{0020}'
+        ('\u{0000}'..='\u{0020}').contains(&c)
     }
 
     fn is_number(&self, c: char) -> bool {
-        c >= '0' && c <= '9'
+        ('0'..='9').contains(&c)
     }
 
     fn is_word_char(&self, c: char, is_first: bool) -> bool {
-        c >= 'a' && c <= 'z'
-            || c >= 'A' && c <= 'Z'
-            || c >= '\u{00A0}' && c <= '\u{00FF}'
+        ('a'..='z').contains(&c)
+            || ('A'..='Z').contains(&c)
+            || ('\u{00A0}'..='\u{00FF}').contains(&c)
             || c == '_'
             || (!is_first && self.is_number(c))
     }
