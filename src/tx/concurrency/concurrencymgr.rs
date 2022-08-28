@@ -47,6 +47,6 @@ impl ConcurrencyMgr {
                 return true;
             }
         }
-        return false;
+        false
     }
 }

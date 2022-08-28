@@ -17,7 +17,7 @@ impl fmt::Display for Expression {
         if let Some(fldname) = &self.fldname {
             return write!(f, "{}", fldname);
         }
-        return write!(f, "");
+        write!(f, "")
     }
 }
 

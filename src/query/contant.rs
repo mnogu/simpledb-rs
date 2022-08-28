@@ -14,7 +14,7 @@ impl fmt::Display for Constant {
         if let Some(sval) = &self.sval {
             return write!(f, "{}", sval);
         }
-        return write!(f, "");
+        write!(f, "")
     }
 }
 
