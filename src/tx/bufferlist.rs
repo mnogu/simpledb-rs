@@ -32,7 +32,7 @@ impl BufferList {
     }
 
     pub(in crate::tx) fn pin(&mut self, blk: &BlockId) -> Result<(), AbortError> {
-        let idx = self.bm.lock().unwrap().pin(&blk)?;
+        let idx = self.bm.lock().unwrap().pin(blk)?;
         self.buffers.insert(blk.clone(), idx);
         self.pins.push(blk.clone());
         Ok(())
@@ -52,7 +52,7 @@ impl BufferList {
 
     pub(in crate::tx) fn unpin_all(&mut self) {
         for blk in &self.pins {
-            if let Some(idx) = self.buffers.get(&blk) {
+            if let Some(idx) = self.buffers.get(blk) {
                 self.bm.lock().unwrap().unpin(*idx);
             }
         }

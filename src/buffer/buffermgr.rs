@@ -99,7 +99,7 @@ impl BufferMgr {
     }
 
     fn try_to_pin(&mut self, blk: &BlockId) -> Result<Option<usize>, Error> {
-        let mut idx = self.find_existing_buffer(&blk);
+        let mut idx = self.find_existing_buffer(blk);
         if let None = idx {
             idx = self.choose_unpinned_buffer();
             if let Some(i) = idx {

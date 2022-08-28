@@ -24,7 +24,7 @@ impl Layout {
 
         for fldname in l.schema.fields() {
             l.offsets.insert(fldname.to_string(), l.slotsize);
-            l.slotsize += l.length_in_bytes(&fldname);
+            l.slotsize += l.length_in_bytes(fldname);
         }
 
         l

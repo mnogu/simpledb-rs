@@ -20,7 +20,7 @@ impl ConcurrencyMgr {
 
     pub fn s_lock(&mut self, blk: &BlockId) -> Result<(), AbortError> {
         if !self.locks.contains_key(blk) {
-            LOCKTBL.lock().unwrap().s_lock(&blk)?;
+            LOCKTBL.lock().unwrap().s_lock(blk)?;
             self.locks.insert(blk.clone(), "S".to_string());
         }
         Ok(())

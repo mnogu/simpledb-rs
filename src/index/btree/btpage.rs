@@ -38,7 +38,7 @@ impl BTPage {
 
     pub fn close(&mut self) -> Result<(), AbortError> {
         if let Some(currentblk) = &self.currentblk {
-            self.tx.lock().unwrap().unpin(&currentblk)?;
+            self.tx.lock().unwrap().unpin(currentblk)?;
         }
         self.currentblk = None;
         Ok(())
@@ -206,7 +206,7 @@ impl BTPage {
             self.tx
                 .lock()
                 .unwrap()
-                .set_string(currentblk, pos, &val, true)?;
+                .set_string(currentblk, pos, val, true)?;
             return Ok(());
         }
         Err(TransactionError::General)

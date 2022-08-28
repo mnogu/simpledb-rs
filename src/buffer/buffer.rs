@@ -69,7 +69,7 @@ impl Buffer {
                 self.lm.lock().unwrap().flush(lsn)?;
             }
             if let Some(ref blk) = self.blk {
-                self.fm.write(&blk, &mut self.contents)?;
+                self.fm.write(blk, &mut self.contents)?;
             }
             self.txnum = None;
         }

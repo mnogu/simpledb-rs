@@ -53,7 +53,7 @@ impl BTreeDir {
         let newblk = self.contents.split(0, level)?;
         let oldroot = DirEntry::new(firstval, newblk.number());
         self.insert_entry(&oldroot)?;
-        self.insert_entry(&e)?;
+        self.insert_entry(e)?;
         self.contents.set_flag(level + 1)?;
         Ok(())
     }

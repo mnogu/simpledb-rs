@@ -38,7 +38,7 @@ impl FileMgr {
         let pos = (blk.number() as usize * self.blocksize) as u64;
         f.seek(SeekFrom::Start(pos))?;
         if f.metadata()?.len() >= pos + p.contents().len() as u64 {
-            f.read_exact(&mut p.contents())?;
+            f.read_exact(p.contents())?;
         }
         Ok(())
     }

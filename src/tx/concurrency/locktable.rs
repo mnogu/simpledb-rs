@@ -29,10 +29,10 @@ impl LockTable {
         while self.has_x_lock(blk) && !waiting_too_long(timestamp, self.max_time)? {
             park_timeout(Duration::from_millis(self.max_time as u64));
         }
-        if self.has_x_lock(&blk) {
+        if self.has_x_lock(blk) {
             return Err(AbortError::General);
         }
-        let val = self.get_lock_val(&blk);
+        let val = self.get_lock_val(blk);
         self.locks.insert(blk.clone(), val + 1);
         Ok(())
     }
@@ -48,7 +48,7 @@ impl LockTable {
     }
 
     fn has_x_lock(&self, blk: &BlockId) -> bool {
-        self.get_lock_val(&blk) < 0
+        self.get_lock_val(blk) < 0
     }
 
     fn get_lock_val(&self, blk: &BlockId) -> i32 {

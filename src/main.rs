@@ -42,7 +42,7 @@ fn main() {
         d = NetworkDriver::new().into();
     }
 
-    let mut conn = d.connect(&s.trim_end()).unwrap();
+    let mut conn = d.connect(s.trim_end()).unwrap();
     s = String::new();
     let mut stmt = conn.create_statement();
     print!("\nSQL> ");

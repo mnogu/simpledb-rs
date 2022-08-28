@@ -85,7 +85,7 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
                 let rid = s.get_rid();
                 if let Some(rid) = rid {
                     for (fldname, ii) in &indexes {
-                        let val = s.get_val(&fldname)?;
+                        let val = s.get_val(fldname)?;
                         let mut idx = ii.open()?;
                         idx.delete(val, &rid)?;
                         idx.close()?;
