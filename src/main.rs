@@ -35,12 +35,11 @@ fn main() {
     let mut s = String::new();
     stdin.read_line(&mut s).unwrap();
     let is_embedded = !s.contains("//");
-    let d: Driver;
-    if is_embedded {
-        d = EmbeddedDriver::new().into();
+    let d: Driver = if is_embedded {
+        EmbeddedDriver::new().into()
     } else {
-        d = NetworkDriver::new().into();
-    }
+        NetworkDriver::new().into()
+    };
 
     let mut conn = d.connect(s.trim_end()).unwrap();
     s = String::new();

@@ -31,11 +31,10 @@ mod tx;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
-    let dirname;
-    if args.len() == 1 {
-        dirname = "studentdb";
+    let dirname = if args.len() == 1 {
+        "studentdb"
     } else {
-        dirname = &args[1];
+        &args[1]
     };
     let db = SimpleDB::new(dirname).unwrap();
 
