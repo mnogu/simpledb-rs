@@ -47,13 +47,11 @@ impl Statement for RemoteStatement {
             .lock()
             .unwrap()
             .execute_query(&request.into_inner().query);
-        if let Ok(rs) = rs {
-            if let ResultSet::Embedded(rs) = rs {
-                let id = self.rss.lock().unwrap().len() as u64;
-                self.rss.lock().unwrap().insert(id, rs);
-                let reply = ExecuteQueryReply { id };
-                return Ok(Response::new(reply));
-            }
+        if let Ok(ResultSet::Embedded(rs)) = rs {
+            let id = self.rss.lock().unwrap().len() as u64;
+            self.rss.lock().unwrap().insert(id, rs);
+            let reply = ExecuteQueryReply { id };
+            return Ok(Response::new(reply));
         }
         Err(Status::internal("failed to execute the query"))
     }
