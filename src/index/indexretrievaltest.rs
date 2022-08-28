@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use std::{
+        collections::HashSet,
         fs,
         sync::{Arc, Mutex},
     };
@@ -40,16 +41,16 @@ mod tests {
             .get_index_info("student", tx.clone())
             .unwrap();
         let ii = indexes.get("majorid").unwrap();
-        let mut idx = ii.open();
+        let mut idx = ii.open().unwrap();
 
-        let mut i = 0;
-        let snames = ["amy", "sue", "kim", "pat"];
+        let mut snames = HashSet::from(["amy", "kim", "pat", "sue"]);
         idx.before_first(Constant::with_int(20)).unwrap();
         while idx.next().unwrap() {
             let datarid = idx.get_data_rid().unwrap();
             studentscan.move_to_rid(&datarid).unwrap();
-            assert_eq!(studentscan.get_string("sname").unwrap(), snames[i]);
-            i += 1;
+            let sname = studentscan.get_string("sname").unwrap();
+            assert!(snames.contains(&*sname));
+            snames.remove(&*sname);
         }
 
         idx.close().unwrap();

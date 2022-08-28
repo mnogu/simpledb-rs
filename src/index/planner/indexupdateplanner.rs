@@ -53,7 +53,7 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
 
                     let ii = indexes.get(&fldname);
                     if let Some(ii) = ii {
-                        let mut idx = ii.open();
+                        let mut idx = ii.open()?;
                         idx.insert(val, &rid)?;
                         idx.close()?;
                     }
@@ -86,7 +86,7 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
                 if let Some(rid) = rid {
                     for (fldname, ii) in &indexes {
                         let val = s.get_val(&fldname)?;
-                        let mut idx = ii.open();
+                        let mut idx = ii.open()?;
                         idx.delete(val, &rid)?;
                         idx.close()?;
                     }
@@ -114,7 +114,7 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
         let m = self.mdm.lock().unwrap().get_index_info(&tblname, tx)?;
         let ii = m.get(&fldname);
         let mut idx = match ii {
-            Some(ii) => Some(ii.open()),
+            Some(ii) => Some(ii.open()?),
             None => None,
         };
 

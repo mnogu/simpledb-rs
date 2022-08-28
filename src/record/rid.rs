@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub struct Rid {
     blknum: i32,
     slot: usize,

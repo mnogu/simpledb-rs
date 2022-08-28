@@ -40,7 +40,7 @@ mod tests {
             .get_index_info("student", tx.clone())
             .unwrap();
         for (fldname, ii) in idxinfo {
-            let idx = ii.open();
+            let idx = ii.open().unwrap();
             indexes.insert(fldname, idx);
         }
 

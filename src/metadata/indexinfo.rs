@@ -1,12 +1,12 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    index::{hash::hashindex::HashIndex, index::Index},
+    index::{btree::btreeindex::BTreeIndex, index::Index},
     record::{
         layout::Layout,
         schema::{Schema, Type},
     },
-    tx::transaction::Transaction,
+    tx::transaction::{Transaction, TransactionError},
 };
 
 use super::statinfo::StatInfo;
@@ -53,14 +53,14 @@ impl IndexInfo {
         }
     }
 
-    pub fn open(&self) -> Index {
-        HashIndex::new(self.tx.clone(), &self.idxname, self.idx_layout.clone()).into()
+    pub fn open(&self) -> Result<Index, TransactionError> {
+        Ok(BTreeIndex::new(self.tx.clone(), &self.idxname, self.idx_layout.clone())?.into())
     }
 
     pub fn blocks_accessed(&self) -> usize {
         let rpb = self.tx.lock().unwrap().block_size() / self.idx_layout.slot_size();
         let numblocks = self.si.records_output() / rpb;
-        HashIndex::search_cost(numblocks, rpb)
+        BTreeIndex::search_cost(numblocks, rpb)
     }
 
     pub fn records_output(&self) -> usize {

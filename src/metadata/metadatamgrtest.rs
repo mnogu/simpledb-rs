@@ -70,13 +70,13 @@ mod tests {
         let idxmap = mdm.get_index_info("MyTable", tx.clone()).unwrap();
 
         let mut ii = idxmap.get("A").unwrap();
-        assert_eq!(ii.blocks_accessed(), 0);
+        assert_eq!(ii.blocks_accessed(), 1);
         assert_eq!(ii.records_output(), 2);
         assert_eq!(ii.distinct_values("A"), 1);
         assert_eq!(ii.distinct_values("B"), 17);
 
         ii = idxmap.get("B").unwrap();
-        assert_eq!(ii.blocks_accessed(), 0);
+        assert_eq!(ii.blocks_accessed(), 1);
         assert_eq!(ii.records_output(), 2);
         assert_eq!(ii.distinct_values("A"), 17);
         assert_eq!(ii.distinct_values("B"), 1);
