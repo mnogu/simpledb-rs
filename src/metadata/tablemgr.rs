@@ -64,7 +64,7 @@ impl TableMgr {
         tcat.set_int("slotsize", layout.slot_size() as i32)?;
         tcat.close()?;
 
-        let mut fcat = TableScan::new(tx.clone(), "fldcat", self.fcat_layout.clone())?;
+        let mut fcat = TableScan::new(tx, "fldcat", self.fcat_layout.clone())?;
         for fldname in sch.fields() {
             fcat.insert()?;
             fcat.set_string("tblname", tblname)?;
@@ -95,7 +95,7 @@ impl TableMgr {
 
         let mut sch = Schema::new();
         let mut offsets = HashMap::new();
-        let mut fcat = TableScan::new(tx.clone(), "fldcat", self.fcat_layout.clone())?;
+        let mut fcat = TableScan::new(tx, "fldcat", self.fcat_layout.clone())?;
         while fcat.next()? {
             if fcat.get_string("tblname")? == tblname {
                 let fldname = fcat.get_string("fldname")?;

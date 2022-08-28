@@ -72,11 +72,7 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
     ) -> Result<usize, TransactionError> {
         let tblname = data.table_name();
         let p = TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?;
-        let indexes = self
-            .mdm
-            .lock()
-            .unwrap()
-            .get_index_info(&tblname, tx.clone())?;
+        let indexes = self.mdm.lock().unwrap().get_index_info(&tblname, tx)?;
 
         let s = p.open()?;
         if let Scan::Select(mut s) = s {

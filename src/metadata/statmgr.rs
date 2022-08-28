@@ -75,7 +75,7 @@ impl StatMgr {
     ) -> Result<StatInfo, TransactionError> {
         let mut num_recs = 0;
         let mut numblocks = 0;
-        let mut ts = TableScan::new(tx.clone(), tblname, layout)?;
+        let mut ts = TableScan::new(tx, tblname, layout)?;
         while ts.next()? {
             num_recs += 1;
             if let Some(rid) = ts.get_rid() {
