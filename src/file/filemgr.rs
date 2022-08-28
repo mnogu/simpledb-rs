@@ -61,7 +61,7 @@ impl FileMgr {
         f.seek(SeekFrom::Start(
             (blk.number() as usize * self.blocksize) as u64,
         ))?;
-        f.write(&b)?;
+        f.write_all(&b)?;
 
         Ok(blk)
     }
