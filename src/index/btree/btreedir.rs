@@ -60,14 +60,14 @@ impl BTreeDir {
 
     pub fn insert(&self, e: &DirEntry) -> Result<Option<DirEntry>, TransactionError> {
         if self.contents.get_flag()? == 0 {
-            return Ok(self.insert_entry(e)?);
+            return self.insert_entry(e);
         }
         let childblk = self.find_child_block(&e.data_val())?;
         let mut child = BTreeDir::new(self.tx.clone(), childblk, self.layout.clone())?;
         let myentry = child.insert(e)?;
         child.close()?;
         if let Some(myentry) = &myentry {
-            return Ok(self.insert_entry(myentry)?);
+            return self.insert_entry(myentry);
         }
         Ok(None)
     }

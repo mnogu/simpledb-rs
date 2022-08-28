@@ -65,6 +65,6 @@ impl ResultSetControl for EmbeddedResultSet {
 
     fn close(&mut self) -> Result<(), SQLError> {
         self.s.close()?;
-        Ok(self.conn.lock().unwrap().close()?)
+        self.conn.lock().unwrap().close()
     }
 }

@@ -19,7 +19,7 @@ pub struct TableScan {
 
 impl ScanControl for TableScan {
     fn before_first(&mut self) -> Result<(), TransactionError> {
-        Ok(self.move_to_block(0)?)
+        self.move_to_block(0)
     }
 
     fn next(&mut self) -> Result<bool, TransactionError> {
@@ -53,7 +53,7 @@ impl ScanControl for TableScan {
     fn get_int(&mut self, fldname: &str) -> Result<i32, TransactionError> {
         if let Some(rp) = &mut self.rp {
             if let Some(currentslot) = self.currentslot {
-                return Ok(rp.get_int(currentslot, fldname)?);
+                return rp.get_int(currentslot, fldname);
             }
         }
         Err(TransactionError::General)
@@ -62,7 +62,7 @@ impl ScanControl for TableScan {
     fn get_string(&mut self, fldname: &str) -> Result<String, TransactionError> {
         if let Some(rp) = &mut self.rp {
             if let Some(currentslot) = self.currentslot {
-                return Ok(rp.get_string(currentslot, fldname)?);
+                return rp.get_string(currentslot, fldname);
             }
         }
         Err(TransactionError::General)

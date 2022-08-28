@@ -28,23 +28,23 @@ impl ScanControl for ProductScan {
 
     fn get_int(&mut self, fldname: &str) -> Result<i32, TransactionError> {
         if self.s1.has_field(fldname) {
-            return Ok(self.s1.get_int(fldname)?);
+            return self.s1.get_int(fldname);
         }
-        Ok(self.s2.get_int(fldname)?)
+        self.s2.get_int(fldname)
     }
 
     fn get_string(&mut self, fldname: &str) -> Result<String, TransactionError> {
         if self.s1.has_field(fldname) {
-            return Ok(self.s1.get_string(fldname)?);
+            return self.s1.get_string(fldname);
         }
-        Ok(self.s2.get_string(fldname)?)
+        self.s2.get_string(fldname)
     }
 
     fn get_val(&mut self, fldname: &str) -> Result<Constant, TransactionError> {
         if self.s1.has_field(fldname) {
-            return Ok(self.s1.get_val(fldname)?);
+            return self.s1.get_val(fldname);
         }
-        Ok(self.s2.get_val(fldname)?)
+        self.s2.get_val(fldname)
     }
 
     fn has_field(&self, fldname: &str) -> bool {

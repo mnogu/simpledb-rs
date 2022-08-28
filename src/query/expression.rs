@@ -41,7 +41,7 @@ impl Expression {
             return Ok(val.clone());
         }
         if let Some(fldname) = &self.fldname {
-            return Ok(s.get_val(fldname)?);
+            return s.get_val(fldname);
         }
         Err(TransactionError::General)
     }

@@ -40,7 +40,7 @@ impl MetadataMgr {
         sch: Arc<Schema>,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<(), TransactionError> {
-        Ok(self.tblmgr.create_table(tblname, sch, tx)?)
+        self.tblmgr.create_table(tblname, sch, tx)
     }
 
     pub fn get_layout(
