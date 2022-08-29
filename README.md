@@ -17,7 +17,7 @@
 - [x] Parsing
 - [x] Planning
 - [ ] JDBC Interfaces
-  - Uses [gRPC](https://grpc.io/) and [Protocol Buffers](https://developers.google.com/protocol-buffers) instead
+  - [x] Uses [gRPC](https://grpc.io/) and [Protocol Buffers](https://developers.google.com/protocol-buffers) instead
 - [x] Indexing
 - [ ] Materialization and Sorting
 - [ ] Effective Buffer Utilization
