@@ -24,7 +24,7 @@ mod tests {
     fn indexupdatetest() {
         create_student_db();
 
-        let db = SimpleDB::new("studentdb2").unwrap();
+        let db = SimpleDB::new("indexupdatetest").unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
         let mdm = db.md_mgr().unwrap();
         let studentplan = TablePlan::new(tx.clone(), "student", mdm.clone()).unwrap();
@@ -88,12 +88,12 @@ mod tests {
         }
         tx.lock().unwrap().commit().unwrap();
 
-        fs::remove_dir_all("studentdb2").unwrap();
+        fs::remove_dir_all("indexupdatetest").unwrap();
     }
 
     fn create_student_db() {
         let d = EmbeddedDriver::new();
-        let mut conn = d.connect("studentdb2").unwrap();
+        let mut conn = d.connect("indexupdatetest").unwrap();
         let mut stmt = conn.create_statement();
 
         let s = "create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)";

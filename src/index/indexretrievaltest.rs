@@ -25,7 +25,7 @@ mod tests {
     fn indexretrievaltest() {
         create_student_db();
 
-        let db = SimpleDB::new("studentdb").unwrap();
+        let db = SimpleDB::new("indexretrievaltest").unwrap();
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
         let mdm = db.md_mgr().unwrap();
 
@@ -57,12 +57,12 @@ mod tests {
         studentscan.close().unwrap();
         tx.lock().unwrap().commit().unwrap();
 
-        fs::remove_dir_all("studentdb").unwrap();
+        fs::remove_dir_all("indexretrievaltest").unwrap();
     }
 
     fn create_student_db() {
         let d = EmbeddedDriver::new();
-        let mut conn = d.connect("studentdb").unwrap();
+        let mut conn = d.connect("indexretrievaltest").unwrap();
         let mut stmt = conn.create_statement();
 
         let s = "create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)";
