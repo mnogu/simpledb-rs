@@ -1,5 +1,6 @@
 use crate::{
-    buffer::buffermgr::AbortError, record::tablescan::TableScan, tx::transaction::TransactionError,
+    buffer::buffermgr::AbortError, index::query::indexselectscan::IndexSelectScan,
+    record::tablescan::TableScan, tx::transaction::TransactionError,
 };
 
 use super::{
@@ -27,6 +28,7 @@ pub enum Scan {
     Project(ProjectScan),
     Select(SelectScan),
     Table(TableScan),
+    IndexSelect(IndexSelectScan),
 }
 
 impl ScanControl for Scan {
@@ -36,6 +38,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.before_first(),
             Scan::Select(scan) => scan.before_first(),
             Scan::Table(scan) => scan.before_first(),
+            Scan::IndexSelect(scan) => scan.before_first(),
         }
     }
 
@@ -45,6 +48,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.next(),
             Scan::Select(scan) => scan.next(),
             Scan::Table(scan) => scan.next(),
+            Scan::IndexSelect(scan) => scan.next(),
         }
     }
 
@@ -54,6 +58,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.get_int(fldname),
             Scan::Select(scan) => scan.get_int(fldname),
             Scan::Table(scan) => scan.get_int(fldname),
+            Scan::IndexSelect(scan) => scan.get_int(fldname),
         }
     }
 
@@ -63,6 +68,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.get_string(fldname),
             Scan::Select(scan) => scan.get_string(fldname),
             Scan::Table(scan) => scan.get_string(fldname),
+            Scan::IndexSelect(scan) => scan.get_string(fldname),
         }
     }
 
@@ -72,6 +78,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.get_val(fldname),
             Scan::Select(scan) => scan.get_val(fldname),
             Scan::Table(scan) => scan.get_val(fldname),
+            Scan::IndexSelect(scan) => scan.get_val(fldname),
         }
     }
 
@@ -81,6 +88,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.has_field(fldname),
             Scan::Select(scan) => scan.has_field(fldname),
             Scan::Table(scan) => scan.has_field(fldname),
+            Scan::IndexSelect(scan) => scan.has_field(fldname),
         }
     }
 
@@ -90,6 +98,7 @@ impl ScanControl for Scan {
             Scan::Project(scan) => scan.close(),
             Scan::Select(scan) => scan.close(),
             Scan::Table(scan) => scan.close(),
+            Scan::IndexSelect(scan) => scan.close(),
         }
     }
 }
@@ -115,5 +124,11 @@ impl From<SelectScan> for Scan {
 impl From<TableScan> for Scan {
     fn from(s: TableScan) -> Self {
         Scan::Table(s)
+    }
+}
+
+impl From<IndexSelectScan> for Scan {
+    fn from(s: IndexSelectScan) -> Self {
+        Scan::IndexSelect(s)
     }
 }

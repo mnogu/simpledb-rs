@@ -65,7 +65,7 @@ impl Lexer {
         .collect();
         let mut l = Lexer {
             keywords,
-            chars: s.to_lowercase().chars().collect(),
+            chars: s.to_string().chars().collect(),
             i: 0,
             token: None,
         };
@@ -248,6 +248,7 @@ impl Lexer {
             is_first = false;
         }
         if !sval.is_empty() {
+            sval = sval.to_lowercase();
             if self.keywords.contains(&sval) {
                 self.token = Some(Token::with_string(sval, TokenType::Keyword));
                 return;
