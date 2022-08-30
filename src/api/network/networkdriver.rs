@@ -19,9 +19,10 @@ impl NetworkDriver {
 
 impl DriverControl for NetworkDriver {
     fn connect(&self, url: &str) -> Result<Connection, SQLError> {
-        let url = url.to_string();
-        let v: Vec<&str> = url.splitn(2, "//").collect();
-        let host = v[v.len() - 1];
+        let mut host = url;
+        if let Some(idx) = host.find("//") {
+            host = &host[idx + 2..];
+        }
         let endpoint = Endpoint::from_shared(format!("http://{}:1099", host))?;
         Ok(Arc::new(Mutex::new(NetworkConnection::new(endpoint)?)).into())
     }
