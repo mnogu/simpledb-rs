@@ -49,9 +49,9 @@ mod tests {
             let datarid = idx.get_data_rid().unwrap();
             studentscan.move_to_rid(&datarid).unwrap();
             let sname = studentscan.get_string("sname").unwrap();
-            assert!(snames.contains(&*sname));
-            snames.remove(&*sname);
+            assert!(snames.remove(&*sname));
         }
+        assert!(snames.is_empty());
 
         idx.close().unwrap();
         studentscan.close().unwrap();
