@@ -81,6 +81,8 @@ mod tests {
             assert_eq!(studentscan.get_int("sid").unwrap(), sids[i]);
             i += 1;
         }
+        assert_eq!(i, snames.len());
+        assert_eq!(i, sids.len());
         studentscan.close().unwrap();
 
         for (_, mut idx) in indexes {

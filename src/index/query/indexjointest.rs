@@ -64,6 +64,7 @@ mod tests {
                 i += 1;
             }
         }
+        assert_eq!(i, grades.len());
         idx.close().unwrap();
         s1.close().unwrap();
         s2.close().unwrap();
@@ -79,6 +80,7 @@ mod tests {
             assert_eq!(grades[i], s.get_string("grade").unwrap());
             i += 1;
         }
+        assert_eq!(i, grades.len());
         s.close().unwrap();
     }
 

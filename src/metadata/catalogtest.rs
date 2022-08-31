@@ -27,6 +27,7 @@ mod tests {
             assert_eq!(slotsize, e[i].1);
             i += 1;
         }
+        assert_eq!(i, e.len());
         ts.close().unwrap();
 
         let fcat_layout = tm.get_layout("fldcat", tx.clone()).unwrap();
@@ -50,6 +51,7 @@ mod tests {
             assert_eq!(offset, e[i].2);
             i += 1;
         }
+        assert_eq!(i, e.len());
         ts.close().unwrap();
 
         fs::remove_dir_all("catalogtest").unwrap();
