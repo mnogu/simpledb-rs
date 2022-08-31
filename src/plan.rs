@@ -2,6 +2,7 @@ pub mod basicqueryplanner;
 pub mod basicupdateplanner;
 pub mod plan;
 pub mod planner;
+pub mod plannerstudenttest;
 pub mod plannertest1;
 pub mod plannertest2;
 pub mod productplan;

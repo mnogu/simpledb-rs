@@ -71,7 +71,9 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
         let tblname = data.table_name();
-        let p = TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?;
+        let mut p: Box<dyn Plan> =
+            Box::new(TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?);
+        p = Box::new(SelectPlan::new(p, data.pred()));
         let indexes = self.mdm.lock().unwrap().get_index_info(&tblname, tx)?;
 
         let s = p.open()?;
