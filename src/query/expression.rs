@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::tx::transaction::TransactionError;
+use crate::{record::schema::Schema, tx::transaction::TransactionError};
 
 use super::{contant::Constant, scan::ScanControl};
 
@@ -44,5 +44,23 @@ impl Expression {
             return s.get_val(fldname);
         }
         Err(TransactionError::General)
+    }
+
+    pub fn as_constant(&self) -> Option<Constant> {
+        self.val.clone()
+    }
+
+    pub fn as_field_name(&self) -> Option<String> {
+        self.fldname.clone()
+    }
+
+    pub fn applies_to(&self, sch: &Schema) -> bool {
+        if self.val.is_some() {
+            return true;
+        }
+        if let Some(fldname) = self.fldname.clone() {
+            return sch.has_field(&fldname);
+        }
+        false
     }
 }

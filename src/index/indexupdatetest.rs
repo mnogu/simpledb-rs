@@ -12,7 +12,7 @@ mod tests {
             embedded::embeddeddriver::EmbeddedDriver, statement::StatementControl,
         },
         index::index::IndexControl,
-        plan::{plan::Plan, tableplan::TablePlan},
+        plan::{plan::PlanControl, tableplan::TablePlan},
         query::{
             scan::{Scan, ScanControl},
             updatescan::UpdateScanControl,

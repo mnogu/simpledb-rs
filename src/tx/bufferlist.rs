@@ -42,6 +42,9 @@ impl BufferList {
         let idx = self.buffers.get(blk);
         if let Some(idx) = idx {
             self.bm.lock().unwrap().unpin(*idx);
+            if let Some(pos) = self.pins.iter().position(|x| x == blk) {
+                self.pins.remove(pos);
+            }
             if !self.pins.contains(blk) {
                 self.buffers.remove(blk);
             }

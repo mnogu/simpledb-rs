@@ -21,7 +21,7 @@
 - [x] Indexing
 - [ ] Materialization and Sorting
 - [ ] Effective Buffer Utilization
-- [ ] Query Optimization
+- [x] Query Optimization
 
 ## References
 

@@ -49,7 +49,11 @@ mod tests {
 
         let s1 = TableScan::new(tx.clone(), "T1", layout1).unwrap();
         let s2 = TableScan::new(tx.clone(), "T2", layout2).unwrap();
-        let s3 = ProductScan::new(s1.into(), s2.into()).unwrap();
+        let s3 = ProductScan::new(
+            Arc::new(Mutex::new(s1.into())),
+            Arc::new(Mutex::new(s2.into())),
+        )
+        .unwrap();
 
         let t = Term::new(Expression::with_string("A"), Expression::with_string("C"));
         let pred = Predicate::with_term(t);

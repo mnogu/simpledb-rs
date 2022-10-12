@@ -12,7 +12,10 @@ mod tests {
         },
         index::{index::IndexControl, planner::indexselectplan::IndexSelectPlan},
         metadata::indexinfo::IndexInfo,
-        plan::{plan::Plan, tableplan::TablePlan},
+        plan::{
+            plan::{Plan, PlanControl},
+            tableplan::TablePlan,
+        },
         query::{
             contant::Constant,
             scan::{Scan, ScanControl},
@@ -36,19 +39,19 @@ mod tests {
             .unwrap();
         let sid_idx = indexes.get("studentid").unwrap();
 
-        let enrollplan = TablePlan::new(tx.clone(), "enroll", mdm).unwrap();
+        let enrollplan = TablePlan::new(tx.clone(), "enroll", mdm).unwrap().into();
 
         let c = Constant::with_int(6);
 
         use_index_manually(sid_idx, &enrollplan, c.clone());
-        use_index_scan(sid_idx, Box::new(enrollplan), c);
+        use_index_scan(sid_idx, enrollplan, c);
 
         tx.lock().unwrap().commit().unwrap();
 
         fs::remove_dir_all("indexselecttest").unwrap();
     }
 
-    fn use_index_manually(ii: &IndexInfo, p: &dyn Plan, c: Constant) {
+    fn use_index_manually(ii: &IndexInfo, p: &Plan, c: Constant) {
         let mut s = match p.open().unwrap() {
             Scan::Table(s) => s,
             _ => unreachable!(),
@@ -68,8 +71,8 @@ mod tests {
         s.close().unwrap();
     }
 
-    fn use_index_scan(ii: &IndexInfo, p: Box<dyn Plan>, c: Constant) {
-        let idxplan = IndexSelectPlan::new(p, ii, c);
+    fn use_index_scan(ii: &IndexInfo, p: Plan, c: Constant) {
+        let idxplan = IndexSelectPlan::new(p, ii.clone(), c);
         let mut s = idxplan.open().unwrap();
 
         let mut i = 0;

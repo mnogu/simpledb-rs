@@ -45,15 +45,14 @@ impl RecoveryMgr {
         lm: Arc<Mutex<LogMgr>>,
         bm: Arc<Mutex<BufferMgr>>,
     ) -> Result<RecoveryMgr, Error> {
-        StartRecord::write_to_log(&mut lm.lock().unwrap(), txnum)?;
+        StartRecord::write_to_log(&lm, txnum)?;
         Ok(RecoveryMgr { lm, bm, txnum })
     }
 
     pub fn commit(&self) -> Result<(), Error> {
         self.bm.lock().unwrap().flush_all(self.txnum)?;
-        let mut lm = self.lm.lock().unwrap();
-        let lsn = CommitRecord::write_to_log(&mut lm, self.txnum)?;
-        lm.flush(lsn)?;
+        let lsn = CommitRecord::write_to_log(&self.lm, self.txnum)?;
+        self.lm.lock().unwrap().flush(lsn)?;
         Ok(())
     }
 
@@ -66,13 +65,8 @@ impl RecoveryMgr {
         let oldval = buff.contents().get_int(offset);
         let blk = buff.block();
         if let Some(blk) = blk {
-            let lsn = SetIntRecord::write_to_log(
-                &mut self.lm.lock().unwrap(),
-                self.txnum,
-                blk.clone(),
-                offset,
-                oldval,
-            )?;
+            let lsn =
+                SetIntRecord::write_to_log(&self.lm, self.txnum, blk.clone(), offset, oldval)?;
             return Ok(lsn);
         }
         Err(RecoveryError::General)
@@ -87,13 +81,8 @@ impl RecoveryMgr {
         let oldval = buff.contents().get_string(offset)?;
         let blk = buff.block();
         if let Some(blk) = blk {
-            let lsn = SetStringRecord::write_to_log(
-                &mut self.lm.lock().unwrap(),
-                self.txnum,
-                blk.clone(),
-                offset,
-                &oldval,
-            )?;
+            let lsn =
+                SetStringRecord::write_to_log(&self.lm, self.txnum, blk.clone(), offset, &oldval)?;
             return Ok(lsn);
         }
         Err(RecoveryError::General)

@@ -108,9 +108,8 @@ impl Transaction {
     pub fn rollback(&mut self) -> Result<(), TransactionError> {
         self.do_rollback()?;
         self.bm.lock().unwrap().flush_all(self.txnum)?;
-        let mut lm = self.lm.lock().unwrap();
-        let lsn = RollbackRecord::write_to_log(&mut lm, self.txnum)?;
-        lm.flush(lsn)?;
+        let lsn = RollbackRecord::write_to_log(&self.lm, self.txnum)?;
+        self.lm.lock().unwrap().flush(lsn)?;
         println!("transaction {} rolled back", self.txnum);
         self.concur_mgr.release();
         self.mybuffers.unpin_all();
@@ -121,7 +120,7 @@ impl Transaction {
         self.bm.lock().unwrap().flush_all(self.txnum)?;
         self.do_recover()?;
         self.bm.lock().unwrap().flush_all(self.txnum)?;
-        let lsn = CheckPointRecord::write_to_log(&mut self.lm.lock().unwrap())?;
+        let lsn = CheckPointRecord::write_to_log(&self.lm)?;
         self.lm.lock().unwrap().flush(lsn)?;
         Ok(())
     }
@@ -219,6 +218,10 @@ impl Transaction {
 
     pub fn block_size(&self) -> usize {
         self.fm.block_size()
+    }
+
+    pub fn available_buffs(&self) -> usize {
+        self.bm.lock().unwrap().available()
     }
 
     fn do_rollback(&mut self) -> Result<(), TransactionError> {

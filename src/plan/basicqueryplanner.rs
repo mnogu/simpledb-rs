@@ -27,10 +27,10 @@ impl BasicQueryPlanner {
 
 impl QueryPlannerControl for BasicQueryPlanner {
     fn create_plan(
-        &self,
+        &mut self,
         data: QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, PlanError> {
+    ) -> Result<Plan, PlanError> {
         let mut plans = Vec::new();
         for tblname in data.tables() {
             let viewdef = self
@@ -43,21 +43,17 @@ impl QueryPlannerControl for BasicQueryPlanner {
                 let viewdata = parser.query()?;
                 plans.push(self.create_plan(viewdata, tx.clone())?);
             } else {
-                plans.push(Box::new(TablePlan::new(
-                    tx.clone(),
-                    &tblname,
-                    self.mdm.clone(),
-                )?));
+                plans.push(TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?.into());
             }
         }
 
         let mut p = plans.remove(0);
         for nextplan in plans {
-            p = Box::new(ProductPlan::new(p, nextplan));
+            p = ProductPlan::new(p, nextplan).into();
         }
 
-        p = Box::new(SelectPlan::new(p, data.pred()));
+        p = SelectPlan::new(p, data.pred()).into();
 
-        Ok(Box::new(ProjectPlan::new(p, data.fields())))
+        Ok(ProjectPlan::new(p, data.fields()).into())
     }
 }

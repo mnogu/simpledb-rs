@@ -6,7 +6,7 @@ use crate::file::filemgr::FileMgr;
 use crate::index::planner::indexupdateplanner::IndexUpdatePlanner;
 use crate::log::logmgr::LogMgr;
 use crate::metadata::metadatamgr::MetadataMgr;
-use crate::plan::basicqueryplanner::BasicQueryPlanner;
+use crate::opt::heuristicqueryplanner::HeuristicQueryPlanner;
 use crate::plan::planner::Planner;
 use crate::tx::transaction::{Transaction, TransactionError};
 
@@ -15,7 +15,7 @@ pub struct SimpleDB {
     lm: Arc<Mutex<LogMgr>>,
     bm: Arc<Mutex<BufferMgr>>,
     mdm: Option<Arc<Mutex<MetadataMgr>>>,
-    planner: Option<Arc<Planner>>,
+    planner: Option<Arc<Mutex<Planner>>>,
 }
 
 impl SimpleDB {
@@ -51,11 +51,11 @@ impl SimpleDB {
             tx.lock().unwrap().recover()?;
         }
         let mdm = Arc::new(Mutex::new(MetadataMgr::new(isnew, tx.clone())?));
-        let qp = BasicQueryPlanner::new(mdm.clone()).into();
+        let qp = HeuristicQueryPlanner::new(mdm.clone()).into();
         let up = IndexUpdatePlanner::new(mdm.clone()).into();
         let planner = Planner::new(qp, up);
         sd.mdm = Some(mdm);
-        sd.planner = Some(Arc::new(planner));
+        sd.planner = Some(Arc::new(Mutex::new(planner)));
         tx.lock().unwrap().commit()?;
         Ok(sd)
     }
@@ -68,7 +68,7 @@ impl SimpleDB {
         self.mdm.clone()
     }
 
-    pub fn planner(&self) -> Option<Arc<Planner>> {
+    pub fn planner(&self) -> Option<Arc<Mutex<Planner>>> {
         self.planner.clone()
     }
 

@@ -1,6 +1,9 @@
 use std::sync::{Arc, Mutex};
 
-use crate::{parse::querydata::QueryData, tx::transaction::Transaction};
+use crate::{
+    opt::heuristicqueryplanner::HeuristicQueryPlanner, parse::querydata::QueryData,
+    tx::transaction::Transaction,
+};
 
 use super::{
     basicqueryplanner::BasicQueryPlanner,
@@ -9,14 +12,15 @@ use super::{
 
 pub trait QueryPlannerControl {
     fn create_plan(
-        &self,
+        &mut self,
         data: QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, PlanError>;
+    ) -> Result<Plan, PlanError>;
 }
 
 pub enum QueryPlanner {
     Basic(BasicQueryPlanner),
+    Heuristic(HeuristicQueryPlanner),
 }
 
 impl From<BasicQueryPlanner> for QueryPlanner {
@@ -25,14 +29,21 @@ impl From<BasicQueryPlanner> for QueryPlanner {
     }
 }
 
+impl From<HeuristicQueryPlanner> for QueryPlanner {
+    fn from(p: HeuristicQueryPlanner) -> Self {
+        QueryPlanner::Heuristic(p)
+    }
+}
+
 impl QueryPlannerControl for QueryPlanner {
     fn create_plan(
-        &self,
+        &mut self,
         data: QueryData,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, PlanError> {
+    ) -> Result<Plan, PlanError> {
         match self {
             QueryPlanner::Basic(planner) => planner.create_plan(data, tx),
+            QueryPlanner::Heuristic(planner) => planner.create_plan(data, tx),
         }
     }
 }

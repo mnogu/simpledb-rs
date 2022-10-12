@@ -1,4 +1,7 @@
-use std::io::Error;
+use std::{
+    io::Error,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     file::page::Page,
@@ -29,12 +32,12 @@ impl CheckPointRecord {
         CheckPointRecord {}
     }
 
-    pub fn write_to_log(lm: &mut LogMgr) -> Result<usize, Error> {
+    pub fn write_to_log(lm: &Arc<Mutex<LogMgr>>) -> Result<usize, Error> {
         let bytes = 4;
         let mut rec = Vec::with_capacity(bytes);
         rec.resize(rec.capacity(), 0);
         let mut p = Page::with_vec(rec);
         p.set_int(0, Op::CheckPoint as i32);
-        lm.append(p.contents())
+        lm.lock().unwrap().append(p.contents())
     }
 }

@@ -25,10 +25,10 @@ impl Planner {
     }
 
     pub fn create_query_plan(
-        &self,
+        &mut self,
         qry: &str,
         tx: Arc<Mutex<Transaction>>,
-    ) -> Result<Box<dyn Plan>, PlanError> {
+    ) -> Result<Plan, PlanError> {
         let mut parser = Parser::new(qry);
         let data = parser.query()?;
         self.verify_query(&data);

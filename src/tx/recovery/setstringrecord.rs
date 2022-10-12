@@ -1,4 +1,8 @@
-use std::{io::Error, string::FromUtf8Error};
+use std::{
+    io::Error,
+    string::FromUtf8Error,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     file::{blockid::BlockId, page::Page},
@@ -55,7 +59,7 @@ impl SetStringRecord {
     }
 
     pub fn write_to_log(
-        lm: &mut LogMgr,
+        lm: &Arc<Mutex<LogMgr>>,
         txnum: usize,
         blk: BlockId,
         offset: usize,
@@ -77,6 +81,6 @@ impl SetStringRecord {
         p.set_int(bpos, blk.number());
         p.set_int(opos, offset as i32);
         p.set_string(vpos, val);
-        lm.append(p.contents())
+        lm.lock().unwrap().append(p.contents())
     }
 }

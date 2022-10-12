@@ -15,7 +15,10 @@ use crate::{
 };
 
 use super::{
-    plan::Plan, selectplan::SelectPlan, tableplan::TablePlan, updateplanner::UpdatePlannerControl,
+    plan::{Plan, PlanControl},
+    selectplan::SelectPlan,
+    tableplan::TablePlan,
+    updateplanner::UpdatePlannerControl,
 };
 
 pub struct BasicUpdatePlanner {
@@ -34,9 +37,8 @@ impl UpdatePlannerControl for BasicUpdatePlanner {
         data: &DeleteData,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
-        let mut p: Box<dyn Plan> =
-            Box::new(TablePlan::new(tx, &data.table_name(), self.mdm.clone())?);
-        p = Box::new(SelectPlan::new(p, data.pred()));
+        let mut p: Plan = TablePlan::new(tx, &data.table_name(), self.mdm.clone())?.into();
+        p = SelectPlan::new(p, data.pred()).into();
         let us = p.open()?;
         if let Scan::Select(mut us) = us {
             let mut count = 0;
@@ -55,9 +57,8 @@ impl UpdatePlannerControl for BasicUpdatePlanner {
         data: &ModifyData,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
-        let mut p: Box<dyn Plan> =
-            Box::new(TablePlan::new(tx, &data.table_name(), self.mdm.clone())?);
-        p = Box::new(SelectPlan::new(p, data.pred()));
+        let mut p: Plan = TablePlan::new(tx, &data.table_name(), self.mdm.clone())?.into();
+        p = SelectPlan::new(p, data.pred()).into();
         let us = p.open()?;
         if let Scan::Select(mut us) = us {
             let mut count = 0;

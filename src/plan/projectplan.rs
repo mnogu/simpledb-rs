@@ -6,30 +6,39 @@ use crate::{
     tx::transaction::TransactionError,
 };
 
-use super::plan::Plan;
+use super::plan::{Plan, PlanControl};
 
+#[derive(Clone)]
 pub struct ProjectPlan {
-    p: Box<dyn Plan>,
+    p: Box<Plan>,
     schema: Arc<Schema>,
 }
 
 impl ProjectPlan {
-    pub fn new(p: Box<dyn Plan>, field_list: Vec<String>) -> ProjectPlan {
+    pub fn new(p: Plan, field_list: Vec<String>) -> ProjectPlan {
         let mut schema = Schema::new();
         for fldname in field_list {
             schema.add(&fldname, &p.schema());
         }
         ProjectPlan {
-            p,
+            p: Box::new(p),
             schema: Arc::new(schema),
         }
     }
 }
 
-impl Plan for ProjectPlan {
+impl PlanControl for ProjectPlan {
     fn open(&self) -> Result<Scan, TransactionError> {
         let s = self.p.open()?;
         Ok(ProjectScan::new(s, self.schema.fields().clone()).into())
+    }
+
+    fn records_output(&self) -> usize {
+        self.p.records_output()
+    }
+
+    fn distinct_values(&self, fldname: &str) -> usize {
+        self.p.distinct_values(fldname)
     }
 
     fn schema(&self) -> Arc<Schema> {

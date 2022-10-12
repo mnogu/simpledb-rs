@@ -12,7 +12,9 @@ use crate::{
         modifydata::ModifyData,
     },
     plan::{
-        plan::Plan, selectplan::SelectPlan, tableplan::TablePlan,
+        plan::{Plan, PlanControl},
+        selectplan::SelectPlan,
+        tableplan::TablePlan,
         updateplanner::UpdatePlannerControl,
     },
     query::{
@@ -71,9 +73,8 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<usize, TransactionError> {
         let tblname = data.table_name();
-        let mut p: Box<dyn Plan> =
-            Box::new(TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?);
-        p = Box::new(SelectPlan::new(p, data.pred()));
+        let mut p: Plan = TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?.into();
+        p = SelectPlan::new(p, data.pred()).into();
         let indexes = self.mdm.lock().unwrap().get_index_info(&tblname, tx)?;
 
         let s = p.open()?;
@@ -105,9 +106,8 @@ impl UpdatePlannerControl for IndexUpdatePlanner {
     ) -> Result<usize, TransactionError> {
         let tblname = data.table_name();
         let fldname = data.target_field();
-        let mut p: Box<dyn Plan> =
-            Box::new(TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?);
-        p = Box::new(SelectPlan::new(p, data.pred()));
+        let mut p: Plan = TablePlan::new(tx.clone(), &tblname, self.mdm.clone())?.into();
+        p = SelectPlan::new(p, data.pred()).into();
 
         let m = self.mdm.lock().unwrap().get_index_info(&tblname, tx)?;
         let ii = m.get(&fldname);

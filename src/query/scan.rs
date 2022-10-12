@@ -1,6 +1,7 @@
 use crate::{
     buffer::buffermgr::AbortError,
     index::query::{indexjoinscan::IndexJoinScan, indexselectscan::IndexSelectScan},
+    multibuffer::{chunkscan::ChunkScan, multibufferproductscan::MultibufferProductScan},
     record::tablescan::TableScan,
     tx::transaction::TransactionError,
 };
@@ -11,17 +12,11 @@ use super::{
 
 pub trait ScanControl {
     fn before_first(&mut self) -> Result<(), TransactionError>;
-
     fn next(&mut self) -> Result<bool, TransactionError>;
-
     fn get_int(&mut self, fldname: &str) -> Result<i32, TransactionError>;
-
     fn get_string(&mut self, fldname: &str) -> Result<String, TransactionError>;
-
     fn get_val(&mut self, fldname: &str) -> Result<Constant, TransactionError>;
-
     fn has_field(&self, fldname: &str) -> bool;
-
     fn close(&mut self) -> Result<(), AbortError>;
 }
 
@@ -32,6 +27,8 @@ pub enum Scan {
     Table(TableScan),
     IndexSelect(IndexSelectScan),
     IndexJoin(IndexJoinScan),
+    Chunk(ChunkScan),
+    MultibufferProduct(MultibufferProductScan),
 }
 
 impl ScanControl for Scan {
@@ -43,6 +40,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.before_first(),
             Scan::IndexSelect(scan) => scan.before_first(),
             Scan::IndexJoin(scan) => scan.before_first(),
+            Scan::Chunk(scan) => scan.before_first(),
+            Scan::MultibufferProduct(scan) => scan.before_first(),
         }
     }
 
@@ -54,6 +53,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.next(),
             Scan::IndexSelect(scan) => scan.next(),
             Scan::IndexJoin(scan) => scan.next(),
+            Scan::Chunk(scan) => scan.next(),
+            Scan::MultibufferProduct(scan) => scan.next(),
         }
     }
 
@@ -65,6 +66,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.get_int(fldname),
             Scan::IndexSelect(scan) => scan.get_int(fldname),
             Scan::IndexJoin(scan) => scan.get_int(fldname),
+            Scan::Chunk(scan) => scan.get_int(fldname),
+            Scan::MultibufferProduct(scan) => scan.get_int(fldname),
         }
     }
 
@@ -76,6 +79,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.get_string(fldname),
             Scan::IndexSelect(scan) => scan.get_string(fldname),
             Scan::IndexJoin(scan) => scan.get_string(fldname),
+            Scan::Chunk(scan) => scan.get_string(fldname),
+            Scan::MultibufferProduct(scan) => scan.get_string(fldname),
         }
     }
 
@@ -87,6 +92,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.get_val(fldname),
             Scan::IndexSelect(scan) => scan.get_val(fldname),
             Scan::IndexJoin(scan) => scan.get_val(fldname),
+            Scan::Chunk(scan) => scan.get_val(fldname),
+            Scan::MultibufferProduct(scan) => scan.get_val(fldname),
         }
     }
 
@@ -98,6 +105,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.has_field(fldname),
             Scan::IndexSelect(scan) => scan.has_field(fldname),
             Scan::IndexJoin(scan) => scan.has_field(fldname),
+            Scan::Chunk(scan) => scan.has_field(fldname),
+            Scan::MultibufferProduct(scan) => scan.has_field(fldname),
         }
     }
 
@@ -109,6 +118,8 @@ impl ScanControl for Scan {
             Scan::Table(scan) => scan.close(),
             Scan::IndexSelect(scan) => scan.close(),
             Scan::IndexJoin(scan) => scan.close(),
+            Scan::Chunk(scan) => scan.close(),
+            Scan::MultibufferProduct(scan) => scan.close(),
         }
     }
 }
@@ -146,5 +157,17 @@ impl From<IndexSelectScan> for Scan {
 impl From<IndexJoinScan> for Scan {
     fn from(s: IndexJoinScan) -> Self {
         Scan::IndexJoin(s)
+    }
+}
+
+impl From<ChunkScan> for Scan {
+    fn from(s: ChunkScan) -> Self {
+        Scan::Chunk(s)
+    }
+}
+
+impl From<MultibufferProductScan> for Scan {
+    fn from(s: MultibufferProductScan) -> Self {
+        Scan::MultibufferProduct(s)
     }
 }

@@ -1,4 +1,7 @@
-use std::io::Error;
+use std::{
+    io::Error,
+    sync::{Arc, Mutex},
+};
 
 use crate::{
     file::page::Page,
@@ -35,13 +38,13 @@ impl CommitRecord {
         }
     }
 
-    pub fn write_to_log(lm: &mut LogMgr, txnum: usize) -> Result<usize, Error> {
+    pub fn write_to_log(lm: &Arc<Mutex<LogMgr>>, txnum: usize) -> Result<usize, Error> {
         let bytes = 4;
         let mut rec = Vec::with_capacity(2 * bytes);
         rec.resize(rec.capacity(), 0);
         let mut p = Page::with_vec(rec);
         p.set_int(0, Op::Commit as i32);
         p.set_int(bytes, txnum as i32);
-        lm.append(p.contents())
+        lm.lock().unwrap().append(p.contents())
     }
 }

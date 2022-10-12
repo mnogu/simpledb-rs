@@ -5,7 +5,7 @@ use crate::{
         connection::ConnectionControl, driver::SQLError, metadata::MetaData,
         resultset::ResultSetControl,
     },
-    plan::plan::Plan,
+    plan::plan::{Plan, PlanControl},
     query::scan::{Scan, ScanControl},
     record::schema::Schema,
     tx::transaction::TransactionError,
@@ -21,7 +21,7 @@ pub struct EmbeddedResultSet {
 
 impl EmbeddedResultSet {
     pub fn new(
-        plan: Box<dyn Plan>,
+        plan: Plan,
         conn: Arc<Mutex<EmbeddedConnection>>,
     ) -> Result<EmbeddedResultSet, TransactionError> {
         Ok(EmbeddedResultSet {

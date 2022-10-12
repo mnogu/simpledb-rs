@@ -11,6 +11,7 @@ use crate::{
 
 use super::statinfo::StatInfo;
 
+#[derive(Clone)]
 pub struct IndexInfo {
     idxname: String,
     fldname: String,

@@ -8,6 +8,7 @@ use super::{
     scan::{Scan, ScanControl},
     updatescan::UpdateScanControl,
 };
+
 pub struct SelectScan {
     s: Box<Scan>,
     pred: Arc<Predicate>,

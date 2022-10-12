@@ -10,6 +10,7 @@ mod tests {
             connection::ConnectionControl, driver::DriverControl,
             embedded::embeddeddriver::EmbeddedDriver, statement::StatementControl,
         },
+        plan::plan::PlanControl,
         query::scan::ScanControl,
         server::simpledb::SimpleDB,
     };
@@ -23,7 +24,11 @@ mod tests {
         let tx = Arc::new(Mutex::new(db.new_tx().unwrap()));
 
         let qry = "select sname, gradyear from student";
-        let p = planner.create_query_plan(qry, tx.clone()).unwrap();
+        let p = planner
+            .lock()
+            .unwrap()
+            .create_query_plan(qry, tx.clone())
+            .unwrap();
         let mut s = p.open().unwrap();
         let mut i = 0;
         let snames = [
@@ -40,7 +45,14 @@ mod tests {
         s.close().unwrap();
 
         let cmd = "delete from STUDENT where MajorId = 30";
-        assert_eq!(planner.execute_update(cmd, tx.clone()).unwrap(), 2);
+        assert_eq!(
+            planner
+                .lock()
+                .unwrap()
+                .execute_update(cmd, tx.clone())
+                .unwrap(),
+            2
+        );
 
         tx.lock().unwrap().commit().unwrap();
 

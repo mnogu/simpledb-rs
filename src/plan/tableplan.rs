@@ -7,8 +7,9 @@ use crate::{
     tx::transaction::{Transaction, TransactionError},
 };
 
-use super::plan::Plan;
+use super::plan::PlanControl;
 
+#[derive(Clone)]
 pub struct TablePlan {
     tblname: String,
     tx: Arc<Mutex<Transaction>>,
@@ -36,9 +37,17 @@ impl TablePlan {
     }
 }
 
-impl Plan for TablePlan {
+impl PlanControl for TablePlan {
     fn open(&self) -> Result<Scan, TransactionError> {
         Ok(TableScan::new(self.tx.clone(), &self.tblname, self.layout.clone())?.into())
+    }
+
+    fn records_output(&self) -> usize {
+        self.si.records_output()
+    }
+
+    fn distinct_values(&self, fldname: &str) -> usize {
+        self.si.distinct_values(fldname)
     }
 
     fn schema(&self) -> Arc<Schema> {

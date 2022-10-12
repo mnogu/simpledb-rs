@@ -10,7 +10,7 @@ use crate::{
 pub struct EmbeddedConnection {
     db: SimpleDB,
     current_tx: Arc<Mutex<Transaction>>,
-    planner: Option<Arc<Planner>>,
+    planner: Option<Arc<Mutex<Planner>>>,
 }
 
 impl EmbeddedConnection {
@@ -28,7 +28,7 @@ impl EmbeddedConnection {
         self.current_tx.clone()
     }
 
-    pub(in crate::api) fn planner(&self) -> Option<Arc<Planner>> {
+    pub(in crate::api) fn planner(&self) -> Option<Arc<Mutex<Planner>>> {
         self.planner.clone()
     }
 }

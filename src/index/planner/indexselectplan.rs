@@ -3,25 +3,30 @@ use std::sync::Arc;
 use crate::{
     index::query::indexselectscan::IndexSelectScan,
     metadata::indexinfo::IndexInfo,
-    plan::plan::Plan,
+    plan::plan::{Plan, PlanControl},
     query::{contant::Constant, scan::Scan},
     record::schema::Schema,
     tx::transaction::TransactionError,
 };
 
-pub struct IndexSelectPlan<'a> {
-    p: Box<dyn Plan>,
-    ii: &'a IndexInfo,
+#[derive(Clone)]
+pub struct IndexSelectPlan {
+    p: Box<Plan>,
+    ii: IndexInfo,
     val: Constant,
 }
 
-impl<'a> IndexSelectPlan<'a> {
-    pub fn new(p: Box<dyn Plan>, ii: &IndexInfo, val: Constant) -> IndexSelectPlan {
-        IndexSelectPlan { p, ii, val }
+impl IndexSelectPlan {
+    pub fn new(p: Plan, ii: IndexInfo, val: Constant) -> IndexSelectPlan {
+        IndexSelectPlan {
+            p: Box::new(p),
+            ii,
+            val,
+        }
     }
 }
 
-impl<'a> Plan for IndexSelectPlan<'a> {
+impl PlanControl for IndexSelectPlan {
     fn open(&self) -> Result<Scan, TransactionError> {
         let s = self.p.open()?;
         if let Scan::Table(ts) = s {
@@ -29,6 +34,14 @@ impl<'a> Plan for IndexSelectPlan<'a> {
             return Ok(IndexSelectScan::new(ts, idx, self.val.clone())?.into());
         }
         Err(TransactionError::General)
+    }
+
+    fn records_output(&self) -> usize {
+        self.ii.records_output()
+    }
+
+    fn distinct_values(&self, fldname: &str) -> usize {
+        self.ii.distinct_values(fldname)
     }
 
     fn schema(&self) -> Arc<Schema> {

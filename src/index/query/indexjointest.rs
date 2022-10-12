@@ -12,7 +12,10 @@ mod tests {
         },
         index::{index::IndexControl, planner::indexjoinplan::IndexJoinPlan},
         metadata::indexinfo::IndexInfo,
-        plan::{plan::Plan, tableplan::TablePlan},
+        plan::{
+            plan::{Plan, PlanControl},
+            tableplan::TablePlan,
+        },
         query::{
             scan::{Scan, ScanControl},
             updatescan::UpdateScanControl,
@@ -35,16 +38,18 @@ mod tests {
             .unwrap();
         let sid_idx = indexes.get("studentid").unwrap();
 
-        let studentplan = TablePlan::new(tx.clone(), "student", mdm.clone()).unwrap();
-        let enrollplan = TablePlan::new(tx, "enroll", mdm).unwrap();
+        let studentplan = TablePlan::new(tx.clone(), "student", mdm.clone())
+            .unwrap()
+            .into();
+        let enrollplan = TablePlan::new(tx, "enroll", mdm).unwrap().into();
 
         use_index_manually(&studentplan, &enrollplan, sid_idx, "sid");
-        use_index_scan(Box::new(studentplan), Box::new(enrollplan), sid_idx, "sid");
+        use_index_scan(studentplan, enrollplan, sid_idx, "sid");
 
         fs::remove_dir_all("indexjointest").unwrap();
     }
 
-    fn use_index_manually(p1: &dyn Plan, p2: &dyn Plan, ii: &IndexInfo, joinfield: &str) {
+    fn use_index_manually(p1: &Plan, p2: &Plan, ii: &IndexInfo, joinfield: &str) {
         let mut s1 = p1.open().unwrap();
         let mut s2 = match p2.open().unwrap() {
             Scan::Table(s2) => s2,
@@ -70,8 +75,8 @@ mod tests {
         s2.close().unwrap();
     }
 
-    fn use_index_scan(p1: Box<dyn Plan>, p2: Box<dyn Plan>, ii: &IndexInfo, joinfield: &str) {
-        let idxplan = IndexJoinPlan::new(p1, p2, ii, joinfield);
+    fn use_index_scan(p1: Plan, p2: Plan, ii: &IndexInfo, joinfield: &str) {
+        let idxplan = IndexJoinPlan::new(p1, p2, ii.clone(), joinfield);
         let mut s = idxplan.open().unwrap();
 
         let mut i = 0;
