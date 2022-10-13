@@ -1,5 +1,6 @@
 pub mod basicqueryplanner;
 pub mod basicupdateplanner;
+pub mod multitableplantest;
 pub mod plan;
 pub mod planner;
 pub mod plannerstudenttest;
