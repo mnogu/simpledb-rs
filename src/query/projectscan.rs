@@ -1,7 +1,7 @@
 use crate::tx::transaction::TransactionError;
 
 use super::{
-    contant::Constant,
+    constant::Constant,
     scan::{Scan, ScanControl},
 };
 

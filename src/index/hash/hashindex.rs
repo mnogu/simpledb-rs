@@ -7,7 +7,7 @@ use std::{
 use crate::{
     buffer::buffermgr::AbortError,
     index::index::IndexControl,
-    query::{contant::Constant, scan::ScanControl, updatescan::UpdateScanControl},
+    query::{constant::Constant, scan::ScanControl, updatescan::UpdateScanControl},
     record::{layout::Layout, rid::Rid, tablescan::TableScan},
     tx::transaction::{Transaction, TransactionError},
 };

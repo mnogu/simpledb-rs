@@ -6,7 +6,7 @@ use crate::{
     tx::transaction::TransactionError,
 };
 
-use super::{contant::Constant, expression::Expression, scan::Scan};
+use super::{constant::Constant, expression::Expression, scan::Scan};
 
 pub struct Term {
     lhs: Expression,

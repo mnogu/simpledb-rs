@@ -7,7 +7,7 @@ use crate::{
 };
 
 use super::{
-    contant::Constant, productscan::ProductScan, projectscan::ProjectScan, selectscan::SelectScan,
+    constant::Constant, productscan::ProductScan, projectscan::ProjectScan, selectscan::SelectScan,
 };
 
 pub trait ScanControl {

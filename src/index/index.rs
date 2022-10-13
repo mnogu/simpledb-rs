@@ -1,5 +1,5 @@
 use crate::{
-    buffer::buffermgr::AbortError, query::contant::Constant, record::rid::Rid,
+    buffer::buffermgr::AbortError, query::constant::Constant, record::rid::Rid,
     tx::transaction::TransactionError,
 };
 

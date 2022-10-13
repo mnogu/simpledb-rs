@@ -1,4 +1,4 @@
-pub mod contant;
+pub mod constant;
 pub mod expression;
 pub mod predicate;
 pub mod productscan;

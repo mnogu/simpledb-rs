@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     buffer::buffermgr::AbortError,
     query::{
-        contant::Constant,
+        constant::Constant,
         productscan::ProductScan,
         scan::{Scan, ScanControl},
     },

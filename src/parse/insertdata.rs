@@ -1,4 +1,4 @@
-use crate::query::contant::Constant;
+use crate::query::constant::Constant;
 
 use super::parser::ObjectControl;
 

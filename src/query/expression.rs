@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{record::schema::Schema, tx::transaction::TransactionError};
 
-use super::{contant::Constant, scan::ScanControl};
+use super::{constant::Constant, scan::ScanControl};
 
 pub struct Expression {
     val: Option<Constant>,

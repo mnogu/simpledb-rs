@@ -1,7 +1,7 @@
 use crate::{
     buffer::buffermgr::AbortError,
     index::index::{Index, IndexControl},
-    query::{contant::Constant, scan::ScanControl, updatescan::UpdateScanControl},
+    query::{constant::Constant, scan::ScanControl, updatescan::UpdateScanControl},
     record::tablescan::TableScan,
     tx::transaction::TransactionError,
 };

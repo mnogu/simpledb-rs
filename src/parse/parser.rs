@@ -1,5 +1,5 @@
 use crate::{
-    query::{contant::Constant, expression::Expression, predicate::Predicate, term::Term},
+    query::{constant::Constant, expression::Expression, predicate::Predicate, term::Term},
     record::schema::Schema,
 };
 

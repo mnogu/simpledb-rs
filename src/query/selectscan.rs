@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::{buffer::buffermgr::AbortError, record::rid::Rid, tx::transaction::TransactionError};
 
 use super::{
-    contant::Constant,
+    constant::Constant,
     predicate::Predicate,
     scan::{Scan, ScanControl},
     updatescan::UpdateScanControl,

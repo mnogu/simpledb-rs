@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{buffer::buffermgr::AbortError, tx::transaction::TransactionError};
 
 use super::{
-    contant::Constant,
+    constant::Constant,
     scan::{Scan, ScanControl},
 };
 

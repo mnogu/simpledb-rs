@@ -4,7 +4,7 @@ use crate::{
     buffer::buffermgr::AbortError,
     file::blockid::BlockId,
     index::index::IndexControl,
-    query::contant::Constant,
+    query::constant::Constant,
     record::{
         layout::Layout,
         rid::Rid,

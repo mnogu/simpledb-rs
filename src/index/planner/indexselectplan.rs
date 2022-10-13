@@ -4,7 +4,7 @@ use crate::{
     index::query::indexselectscan::IndexSelectScan,
     metadata::indexinfo::IndexInfo,
     plan::plan::{Plan, PlanControl},
-    query::{contant::Constant, scan::Scan},
+    query::{constant::Constant, scan::Scan},
     record::schema::Schema,
     tx::transaction::TransactionError,
 };

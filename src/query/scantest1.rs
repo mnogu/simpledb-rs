@@ -9,7 +9,7 @@ mod tests {
 
     use crate::{
         query::{
-            contant::Constant, expression::Expression, predicate::Predicate,
+            constant::Constant, expression::Expression, predicate::Predicate,
             projectscan::ProjectScan, scan::ScanControl, selectscan::SelectScan, term::Term,
             updatescan::UpdateScanControl,
         },

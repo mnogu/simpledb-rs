@@ -2,7 +2,7 @@ use std::{fmt, sync::Arc};
 
 use crate::{plan::plan::Plan, record::schema::Schema, tx::transaction::TransactionError};
 
-use super::{contant::Constant, scan::Scan, term::Term};
+use super::{constant::Constant, scan::Scan, term::Term};
 
 pub struct Predicate {
     terms: Vec<Arc<Term>>,

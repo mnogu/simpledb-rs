@@ -3,7 +3,7 @@ use crate::{
     tx::transaction::TransactionError,
 };
 
-use super::{contant::Constant, selectscan::SelectScan};
+use super::{constant::Constant, selectscan::SelectScan};
 
 pub trait UpdateScanControl {
     fn set_val(&mut self, fldname: &str, val: Constant) -> Result<(), TransactionError>;

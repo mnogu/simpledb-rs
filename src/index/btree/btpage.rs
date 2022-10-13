@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{
     buffer::buffermgr::AbortError,
     file::blockid::BlockId,
-    query::contant::Constant,
+    query::constant::Constant,
     record::{layout::Layout, rid::Rid, schema},
     tx::transaction::{Transaction, TransactionError},
 };

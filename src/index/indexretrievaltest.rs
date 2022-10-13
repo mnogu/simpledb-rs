@@ -14,7 +14,7 @@ mod tests {
         index::index::IndexControl,
         plan::{plan::PlanControl, tableplan::TablePlan},
         query::{
-            contant::Constant,
+            constant::Constant,
             scan::{Scan, ScanControl},
             updatescan::UpdateScanControl,
         },
