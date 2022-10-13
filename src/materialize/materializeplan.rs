@@ -6,6 +6,7 @@ use crate::{
         scan::{Scan, ScanControl},
         updatescan::UpdateScanControl,
     },
+    record::layout::Layout,
     tx::transaction::{Transaction, TransactionError},
 };
 
@@ -41,6 +42,12 @@ impl PlanControl for MaterializePlan {
         src.close()?;
         dest.before_first()?;
         Ok(Scan::Table(dest))
+    }
+
+    fn blocks_accessed(&self) -> usize {
+        let layout = Layout::new(self.srcplan.schema());
+        let rpb = self.tx.lock().unwrap().block_size() / layout.slot_size();
+        (self.srcplan.records_output() as f64 / rpb as f64).ceil() as usize
     }
 
     fn records_output(&self) -> usize {

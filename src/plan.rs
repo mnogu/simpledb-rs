@@ -9,5 +9,6 @@ pub mod productplan;
 pub mod projectplan;
 pub mod queryplanner;
 pub mod selectplan;
+pub mod singletableplantest;
 pub mod tableplan;
 pub mod updateplanner;

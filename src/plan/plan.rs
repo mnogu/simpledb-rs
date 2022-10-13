@@ -36,6 +36,7 @@ impl From<BadSyntaxError> for PlanError {
 
 pub trait PlanControl {
     fn open(&self) -> Result<Scan, TransactionError>;
+    fn blocks_accessed(&self) -> usize;
     fn records_output(&self) -> usize;
     fn distinct_values(&self, fldname: &str) -> usize;
     fn schema(&self) -> Arc<Schema>;
@@ -64,6 +65,19 @@ impl PlanControl for Plan {
             Plan::IndexJoin(plan) => plan.open(),
             Plan::Materialize(plan) => plan.open(),
             Plan::MultibufferProduct(plan) => plan.open(),
+        }
+    }
+
+    fn blocks_accessed(&self) -> usize {
+        match self {
+            Plan::Table(plan) => plan.blocks_accessed(),
+            Plan::Select(plan) => plan.blocks_accessed(),
+            Plan::Project(plan) => plan.blocks_accessed(),
+            Plan::Product(plan) => plan.blocks_accessed(),
+            Plan::IndexSelect(plan) => plan.blocks_accessed(),
+            Plan::IndexJoin(plan) => plan.blocks_accessed(),
+            Plan::Materialize(plan) => plan.blocks_accessed(),
+            Plan::MultibufferProduct(plan) => plan.blocks_accessed(),
         }
     }
 

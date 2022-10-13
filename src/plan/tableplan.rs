@@ -42,6 +42,10 @@ impl PlanControl for TablePlan {
         Ok(TableScan::new(self.tx.clone(), &self.tblname, self.layout.clone())?.into())
     }
 
+    fn blocks_accessed(&self) -> usize {
+        self.si.blocks_accessed()
+    }
+
     fn records_output(&self) -> usize {
         self.si.records_output()
     }

@@ -66,6 +66,13 @@ impl PlanControl for MultibufferProductPlan {
         .into())
     }
 
+    fn blocks_accessed(&self) -> usize {
+        let avail = self.tx.lock().unwrap().available_buffs();
+        let size = MaterializePlan::new(self.tx.clone(), *self.rhs.clone()).blocks_accessed();
+        let numchunks = size / avail;
+        self.rhs.blocks_accessed() + (self.lhs.blocks_accessed() * numchunks)
+    }
+
     fn records_output(&self) -> usize {
         self.lhs.records_output() * self.rhs.records_output()
     }

@@ -29,6 +29,10 @@ impl PlanControl for SelectPlan {
         Ok(SelectScan::new(s, self.pred.clone()).into())
     }
 
+    fn blocks_accessed(&self) -> usize {
+        self.p.blocks_accessed()
+    }
+
     fn records_output(&self) -> usize {
         self.p.records_output() / self.pred.reduction_factor(&self.p)
     }

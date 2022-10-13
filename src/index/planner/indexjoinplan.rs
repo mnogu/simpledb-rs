@@ -43,6 +43,12 @@ impl PlanControl for IndexJoinPlan {
         Err(TransactionError::General)
     }
 
+    fn blocks_accessed(&self) -> usize {
+        self.p1.blocks_accessed()
+            + (self.p1.records_output() * self.ii.blocks_accessed())
+            + self.records_output()
+    }
+
     fn records_output(&self) -> usize {
         self.p1.records_output() * self.ii.records_output()
     }

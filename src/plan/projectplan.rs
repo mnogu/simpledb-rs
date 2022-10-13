@@ -33,6 +33,10 @@ impl PlanControl for ProjectPlan {
         Ok(ProjectScan::new(s, self.schema.fields().clone()).into())
     }
 
+    fn blocks_accessed(&self) -> usize {
+        self.p.blocks_accessed()
+    }
+
     fn records_output(&self) -> usize {
         self.p.records_output()
     }

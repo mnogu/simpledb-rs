@@ -36,6 +36,10 @@ impl PlanControl for IndexSelectPlan {
         Err(TransactionError::General)
     }
 
+    fn blocks_accessed(&self) -> usize {
+        self.ii.blocks_accessed() + self.records_output()
+    }
+
     fn records_output(&self) -> usize {
         self.ii.records_output()
     }

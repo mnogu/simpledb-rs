@@ -35,6 +35,10 @@ impl PlanControl for ProductPlan {
         Ok(ProductScan::new(Arc::new(Mutex::new(s1)), Arc::new(Mutex::new(s2)))?.into())
     }
 
+    fn blocks_accessed(&self) -> usize {
+        self.p1.blocks_accessed() + (self.p1.records_output() * self.p2.blocks_accessed())
+    }
+
     fn records_output(&self) -> usize {
         self.p1.records_output() * self.p2.records_output()
     }
