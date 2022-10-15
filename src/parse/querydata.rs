@@ -1,11 +1,11 @@
-use std::{fmt, sync::Arc};
+use std::fmt;
 
 use crate::query::predicate::Predicate;
 
 pub struct QueryData {
     fields: Vec<String>,
     tables: Vec<String>,
-    pred: Arc<Predicate>,
+    pred: Predicate,
 }
 
 impl fmt::Display for QueryData {
@@ -30,7 +30,7 @@ impl QueryData {
         QueryData {
             fields,
             tables,
-            pred: Arc::new(pred),
+            pred,
         }
     }
 
@@ -42,7 +42,7 @@ impl QueryData {
         self.tables.clone()
     }
 
-    pub fn pred(&self) -> Arc<Predicate> {
+    pub fn pred(&self) -> Predicate {
         self.pred.clone()
     }
 }

@@ -39,7 +39,7 @@ mod tests {
             Expression::with_string("majorid"),
             Expression::with_string("did"),
         );
-        let pred = Arc::new(Predicate::with_term(t));
+        let pred = Predicate::with_term(t);
         let p4 = SelectPlan::new(p3.clone().into(), pred);
 
         let e = [(9, 1), (3, 1), (27, 10), (6, 10)];

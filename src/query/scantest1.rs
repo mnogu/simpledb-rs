@@ -45,7 +45,7 @@ mod tests {
         let t = Term::new(Expression::with_string("A"), Expression::with_constant(c));
         let pred = Predicate::with_term(t);
         assert_eq!(format!("{}", pred), "A=10");
-        let s3 = SelectScan::new(s2.into(), Arc::new(pred));
+        let s3 = SelectScan::new(s2.into(), pred);
         let fields = vec!["B".to_string()];
         let mut s4 = ProjectScan::new(s3.into(), fields);
         let mut count = 0;

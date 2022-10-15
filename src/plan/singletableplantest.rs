@@ -37,14 +37,14 @@ mod tests {
             Expression::with_string("majorid"),
             Expression::with_constant(Constant::with_int(10)),
         );
-        let pred = Arc::new(Predicate::with_term(t));
+        let pred = Predicate::with_term(t);
         let p2 = SelectPlan::new(p1.clone().into(), pred);
 
         let t2 = Term::new(
             Expression::with_string("gradyear"),
             Expression::with_constant(Constant::with_int(2020)),
         );
-        let pred2 = Arc::new(Predicate::with_term(t2));
+        let pred2 = Predicate::with_term(t2);
         let p3 = SelectPlan::new(p2.clone().into(), pred2);
 
         let c = vec!["sname", "majorid", "gradyear"]

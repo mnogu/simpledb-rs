@@ -1,19 +1,17 @@
-use std::sync::Arc;
-
 use crate::query::predicate::Predicate;
 
 use super::parser::ObjectControl;
 
 pub struct DeleteData {
     tblname: String,
-    pred: Arc<Predicate>,
+    pred: Predicate,
 }
 
 impl DeleteData {
     pub fn new(tblname: &str, pred: Predicate) -> DeleteData {
         DeleteData {
             tblname: tblname.to_string(),
-            pred: Arc::new(pred),
+            pred,
         }
     }
 
@@ -21,7 +19,7 @@ impl DeleteData {
         self.tblname.clone()
     }
 
-    pub fn pred(&self) -> Arc<Predicate> {
+    pub fn pred(&self) -> Predicate {
         self.pred.clone()
     }
 }

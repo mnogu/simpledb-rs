@@ -58,7 +58,7 @@ mod tests {
         let t = Term::new(Expression::with_string("A"), Expression::with_string("C"));
         let pred = Predicate::with_term(t);
         assert_eq!(format!("{}", pred), "A=C");
-        let s4 = SelectScan::new(s3.into(), Arc::new(pred));
+        let s4 = SelectScan::new(s3.into(), pred);
 
         let c = vec!["B".to_string(), "D".to_string()];
         let mut s5 = ProjectScan::new(s4.into(), c);

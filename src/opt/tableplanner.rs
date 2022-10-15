@@ -19,7 +19,7 @@ use crate::{
 
 pub struct TablePlanner {
     myplan: TablePlan,
-    mypred: Arc<Predicate>,
+    mypred: Predicate,
     myschema: Arc<Schema>,
     indexes: HashMap<String, IndexInfo>,
     tx: Arc<Mutex<Transaction>>,
@@ -28,7 +28,7 @@ pub struct TablePlanner {
 impl TablePlanner {
     pub fn new(
         tblname: &str,
-        mypred: Arc<Predicate>,
+        mypred: Predicate,
         tx: Arc<Mutex<Transaction>>,
         mdm: Arc<Mutex<MetadataMgr>>,
     ) -> Result<TablePlanner, TransactionError> {
@@ -120,7 +120,7 @@ impl TablePlanner {
     fn add_select_pred(&self, p: Plan) -> Plan {
         let selectpred = self.mypred.select_sub_pred(self.myschema.clone());
         if let Some(selectpred) = selectpred {
-            return SelectPlan::new(p, Arc::new(selectpred)).into();
+            return SelectPlan::new(p, selectpred).into();
         }
         p
     }
@@ -128,7 +128,7 @@ impl TablePlanner {
     fn add_join_pred(&self, p: Plan, currsch: Arc<Schema>) -> Plan {
         let joinpred = self.mypred.join_sub_pred(currsch, self.myschema.clone());
         if let Some(joinpred) = joinpred {
-            return SelectPlan::new(p, Arc::new(joinpred)).into();
+            return SelectPlan::new(p, joinpred).into();
         }
         p
     }

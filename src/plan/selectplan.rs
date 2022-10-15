@@ -11,11 +11,11 @@ use super::plan::{Plan, PlanControl};
 #[derive(Clone)]
 pub struct SelectPlan {
     p: Box<Plan>,
-    pred: Arc<Predicate>,
+    pred: Predicate,
 }
 
 impl SelectPlan {
-    pub fn new(p: Plan, pred: Arc<Predicate>) -> SelectPlan {
+    pub fn new(p: Plan, pred: Predicate) -> SelectPlan {
         SelectPlan {
             p: Box::new(p),
             pred,

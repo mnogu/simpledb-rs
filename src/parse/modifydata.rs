@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::query::{expression::Expression, predicate::Predicate};
 
 use super::parser::ObjectControl;
@@ -8,7 +6,7 @@ pub struct ModifyData {
     tblname: String,
     fldname: String,
     newval: Expression,
-    pred: Arc<Predicate>,
+    pred: Predicate,
 }
 
 impl ModifyData {
@@ -17,7 +15,7 @@ impl ModifyData {
             tblname: tblname.to_string(),
             fldname: fldname.to_string(),
             newval,
-            pred: Arc::new(pred),
+            pred,
         }
     }
 
@@ -33,7 +31,7 @@ impl ModifyData {
         self.newval.clone()
     }
 
-    pub fn pred(&self) -> Arc<Predicate> {
+    pub fn pred(&self) -> Predicate {
         self.pred.clone()
     }
 }

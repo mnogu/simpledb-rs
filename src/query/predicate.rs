@@ -4,6 +4,7 @@ use crate::{plan::plan::Plan, record::schema::Schema, tx::transaction::Transacti
 
 use super::{constant::Constant, scan::Scan, term::Term};
 
+#[derive(Clone)]
 pub struct Predicate {
     terms: Vec<Term>,
 }

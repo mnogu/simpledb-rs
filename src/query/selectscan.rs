@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{buffer::buffermgr::AbortError, record::rid::Rid, tx::transaction::TransactionError};
 
 use super::{
@@ -11,7 +9,7 @@ use super::{
 
 pub struct SelectScan {
     s: Box<Scan>,
-    pred: Arc<Predicate>,
+    pred: Predicate,
 }
 
 impl ScanControl for SelectScan {
@@ -108,7 +106,7 @@ impl UpdateScanControl for SelectScan {
 }
 
 impl SelectScan {
-    pub fn new(s: Scan, pred: Arc<Predicate>) -> SelectScan {
+    pub fn new(s: Scan, pred: Predicate) -> SelectScan {
         SelectScan {
             s: Box::new(s),
             pred,
