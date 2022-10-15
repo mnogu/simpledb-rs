@@ -7,6 +7,7 @@ use crate::{
 
 use super::{
     basicqueryplanner::BasicQueryPlanner,
+    betterqueryplanner::BetterQueryPlanner,
     plan::{Plan, PlanError},
 };
 
@@ -20,12 +21,19 @@ pub trait QueryPlannerControl {
 
 pub enum QueryPlanner {
     Basic(BasicQueryPlanner),
+    Better(BetterQueryPlanner),
     Heuristic(HeuristicQueryPlanner),
 }
 
 impl From<BasicQueryPlanner> for QueryPlanner {
     fn from(p: BasicQueryPlanner) -> Self {
         QueryPlanner::Basic(p)
+    }
+}
+
+impl From<BetterQueryPlanner> for QueryPlanner {
+    fn from(p: BetterQueryPlanner) -> Self {
+        QueryPlanner::Better(p)
     }
 }
 
@@ -43,6 +51,7 @@ impl QueryPlannerControl for QueryPlanner {
     ) -> Result<Plan, PlanError> {
         match self {
             QueryPlanner::Basic(planner) => planner.create_plan(data, tx),
+            QueryPlanner::Better(planner) => planner.create_plan(data, tx),
             QueryPlanner::Heuristic(planner) => planner.create_plan(data, tx),
         }
     }
