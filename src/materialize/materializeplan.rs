@@ -6,7 +6,7 @@ use crate::{
         scan::{Scan, ScanControl},
         updatescan::UpdateScanControl,
     },
-    record::layout::Layout,
+    record::{layout::Layout, schema::Schema},
     tx::transaction::{Transaction, TransactionError},
 };
 
@@ -58,7 +58,7 @@ impl PlanControl for MaterializePlan {
         self.srcplan.distinct_values(fldname)
     }
 
-    fn schema(&self) -> Arc<crate::record::schema::Schema> {
+    fn schema(&self) -> Arc<Schema> {
         self.srcplan.schema()
     }
 }
