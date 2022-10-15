@@ -11,14 +11,14 @@ use crate::{
 pub struct BTPage {
     tx: Arc<Mutex<Transaction>>,
     currentblk: Option<BlockId>,
-    layout: Arc<Layout>,
+    layout: Layout,
 }
 
 impl BTPage {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         currentblk: BlockId,
-        layout: Arc<Layout>,
+        layout: Layout,
     ) -> Result<BTPage, AbortError> {
         tx.lock().unwrap().pin(&currentblk)?;
         Ok(BTPage {

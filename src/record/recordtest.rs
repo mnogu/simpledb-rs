@@ -20,7 +20,7 @@ mod tests {
         let mut sch = Schema::new();
         sch.add_int_field("A");
         sch.add_string_field("B", 9);
-        let layout = Arc::new(Layout::new(Arc::new(sch)));
+        let layout = Layout::new(Arc::new(sch));
 
         let e = [("A", 4), ("B", 8)];
         for (i, fldname) in layout.schema().fields().iter().enumerate() {

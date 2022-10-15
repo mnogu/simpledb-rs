@@ -25,7 +25,7 @@ mod tests {
         let mut sch1 = Schema::new();
         sch1.add_int_field("A");
         sch1.add_string_field("B", 9);
-        let layout1 = Arc::new(Layout::new(Arc::new(sch1)));
+        let layout1 = Layout::new(Arc::new(sch1));
         let mut s1 = TableScan::new(tx.clone(), "T", layout1.clone()).unwrap();
 
         s1.before_first().unwrap();

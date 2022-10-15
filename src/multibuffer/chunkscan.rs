@@ -12,7 +12,7 @@ pub struct ChunkScan {
     buffs: Vec<RecordPage>,
     tx: Arc<Mutex<Transaction>>,
     filename: String,
-    layout: Arc<Layout>,
+    layout: Layout,
     startbnum: usize,
     endbnum: usize,
     currentbnum: usize,
@@ -24,7 +24,7 @@ impl ChunkScan {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         filename: &str,
-        layout: Arc<Layout>,
+        layout: Layout,
         startbnum: usize,
         endbnum: usize,
     ) -> Result<ChunkScan, TransactionError> {

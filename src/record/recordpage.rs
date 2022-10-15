@@ -16,14 +16,14 @@ enum Flag {
 pub struct RecordPage {
     tx: Arc<Mutex<Transaction>>,
     blk: BlockId,
-    layout: Arc<Layout>,
+    layout: Layout,
 }
 
 impl RecordPage {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         blk: BlockId,
-        layout: Arc<Layout>,
+        layout: Layout,
     ) -> Result<RecordPage, AbortError> {
         tx.lock().unwrap().pin(&blk)?;
         Ok(RecordPage { tx, blk, layout })

@@ -12,7 +12,7 @@ use crate::{
 use super::{indexinfo::IndexInfo, statmgr::StatMgr, tablemgr::TableMgr};
 
 pub struct IndexMgr {
-    layout: Arc<Layout>,
+    layout: Layout,
     tblmgr: Arc<TableMgr>,
     statmgr: Arc<Mutex<StatMgr>>,
 }
@@ -31,7 +31,7 @@ impl IndexMgr {
             sch.add_string_field("fieldname", TableMgr::MAX_NAME);
             tblmgr.create_table("idxcat", Arc::new(sch), tx.clone())?;
         }
-        let layout = Arc::new(tblmgr.get_layout("idxcat", tx)?);
+        let layout = tblmgr.get_layout("idxcat", tx)?;
         Ok(IndexMgr {
             layout,
             tblmgr,
@@ -65,7 +65,7 @@ impl IndexMgr {
             if ts.get_string("tablename")? == tblname {
                 let idxname = ts.get_string("indexname")?;
                 let fldname = ts.get_string("fieldname")?;
-                let tbl_layout = Arc::new(self.tblmgr.get_layout(tblname, tx.clone())?);
+                let tbl_layout = self.tblmgr.get_layout(tblname, tx.clone())?;
                 let tblsi = self.statmgr.lock().unwrap().get_stat_info(
                     tblname,
                     tbl_layout.clone(),

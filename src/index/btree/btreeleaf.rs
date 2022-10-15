@@ -12,7 +12,7 @@ use super::{btpage::BTPage, direntry::DirEntry};
 
 pub struct BTreeLeaf {
     tx: Arc<Mutex<Transaction>>,
-    layout: Arc<Layout>,
+    layout: Layout,
     searchkey: Constant,
     contents: BTPage,
     currentslot: i32,
@@ -23,7 +23,7 @@ impl BTreeLeaf {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         blk: BlockId,
-        layout: Arc<Layout>,
+        layout: Layout,
         searchkey: Constant,
     ) -> Result<BTreeLeaf, TransactionError> {
         let contents = BTPage::new(tx.clone(), blk.clone(), layout.clone())?;

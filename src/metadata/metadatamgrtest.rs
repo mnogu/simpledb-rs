@@ -29,7 +29,7 @@ mod tests {
 
         mdm.create_table("MyTable", Arc::new(sch), tx.clone())
             .unwrap();
-        let layout = Arc::new(mdm.get_layout("MyTable", tx.clone()).unwrap());
+        let layout = mdm.get_layout("MyTable", tx.clone()).unwrap();
         let size = layout.slot_size();
         let sch2 = layout.schema();
         assert_eq!(size, 21);

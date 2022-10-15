@@ -15,7 +15,7 @@ use crate::{
 pub struct HashIndex {
     tx: Arc<Mutex<Transaction>>,
     idxname: String,
-    layout: Arc<Layout>,
+    layout: Layout,
     searchkey: Option<Constant>,
     ts: Option<TableScan>,
 }
@@ -23,7 +23,7 @@ pub struct HashIndex {
 impl HashIndex {
     const NUM_BUCKETS: usize = 100;
 
-    pub fn new(tx: Arc<Mutex<Transaction>>, idxname: &str, layout: Arc<Layout>) -> HashIndex {
+    pub fn new(tx: Arc<Mutex<Transaction>>, idxname: &str, layout: Layout) -> HashIndex {
         HashIndex {
             tx,
             idxname: idxname.to_string(),

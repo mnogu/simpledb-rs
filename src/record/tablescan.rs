@@ -11,7 +11,7 @@ use super::{layout::Layout, recordpage::RecordPage, rid::Rid, schema::Type};
 
 pub struct TableScan {
     tx: Arc<Mutex<Transaction>>,
-    layout: Arc<Layout>,
+    layout: Layout,
     rp: Option<RecordPage>,
     filename: String,
     currentslot: Option<usize>,
@@ -180,7 +180,7 @@ impl TableScan {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         tablname: &str,
-        layout: Arc<Layout>,
+        layout: Layout,
     ) -> Result<TableScan, TransactionError> {
         let filename = format!("{}.tbl", tablname);
         let mut t = TableScan {

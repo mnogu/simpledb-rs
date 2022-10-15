@@ -36,7 +36,7 @@ impl ViewMgr {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<(), TransactionError> {
         let layout = self.tbl_mgr.get_layout("viewcat", tx.clone())?;
-        let mut ts = TableScan::new(tx, "viewcat", Arc::new(layout))?;
+        let mut ts = TableScan::new(tx, "viewcat", layout)?;
         ts.insert()?;
         ts.set_string("viewname", vname)?;
         ts.set_string("viewdef", vdef)?;
@@ -50,7 +50,7 @@ impl ViewMgr {
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<Option<String>, TransactionError> {
         let layout = self.tbl_mgr.get_layout("viewcat", tx.clone())?;
-        let mut ts = TableScan::new(tx, "viewcat", Arc::new(layout))?;
+        let mut ts = TableScan::new(tx, "viewcat", layout)?;
         while ts.next()? {
             if ts.get_string("viewname")? == vname {
                 let result = ts.get_string("viewdef")?;

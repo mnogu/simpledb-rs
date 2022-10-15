@@ -17,7 +17,7 @@ mod tests {
         let tm = TableMgr::new(true, tx.clone()).unwrap();
         let tcat_layout = tm.get_layout("tblcat", tx.clone()).unwrap();
 
-        let mut ts = TableScan::new(tx.clone(), "tblcat", Arc::new(tcat_layout)).unwrap();
+        let mut ts = TableScan::new(tx.clone(), "tblcat", tcat_layout).unwrap();
         let mut i = 0;
         let e = [("tblcat", 28), ("fldcat", 56)];
         while ts.next().unwrap() {
@@ -31,7 +31,7 @@ mod tests {
         ts.close().unwrap();
 
         let fcat_layout = tm.get_layout("fldcat", tx.clone()).unwrap();
-        ts = TableScan::new(tx.clone(), "fldcat", Arc::new(fcat_layout)).unwrap();
+        ts = TableScan::new(tx.clone(), "fldcat", fcat_layout).unwrap();
         let mut i = 0;
         let e = [
             ("tblcat", "tblname", 4),

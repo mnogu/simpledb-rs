@@ -36,7 +36,7 @@ impl StatMgr {
     pub fn get_stat_info(
         &mut self,
         tblname: &str,
-        layout: Arc<Layout>,
+        layout: Layout,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<StatInfo, TransactionError> {
         self.numcalls += 1;
@@ -56,11 +56,11 @@ impl StatMgr {
         self.tablestats = HashMap::new();
         self.numcalls = 0;
         let tcatlayout = self.tbl_mgr.get_layout("tblcat", tx.clone())?;
-        let mut tcat = TableScan::new(tx.clone(), "tblcat", Arc::new(tcatlayout))?;
+        let mut tcat = TableScan::new(tx.clone(), "tblcat", tcatlayout)?;
         while tcat.next()? {
             let tblname = tcat.get_string("tblname")?;
             let layout = self.tbl_mgr.get_layout(&tblname, tx.clone())?;
-            let si = self.calc_table_stats(&tblname, Arc::new(layout), tx.clone())?;
+            let si = self.calc_table_stats(&tblname, layout, tx.clone())?;
             self.tablestats.insert(tblname, si);
         }
         tcat.close()?;
@@ -70,7 +70,7 @@ impl StatMgr {
     fn calc_table_stats(
         &self,
         tblname: &str,
-        layout: Arc<Layout>,
+        layout: Layout,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<StatInfo, TransactionError> {
         let mut num_recs = 0;

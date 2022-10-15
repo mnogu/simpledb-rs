@@ -17,7 +17,7 @@ pub struct IndexInfo {
     fldname: String,
     tx: Arc<Mutex<Transaction>>,
     tbl_schema: Arc<Schema>,
-    idx_layout: Arc<Layout>,
+    idx_layout: Layout,
     si: StatInfo,
 }
 
@@ -43,7 +43,7 @@ impl IndexInfo {
         tx: Arc<Mutex<Transaction>>,
         si: StatInfo,
     ) -> IndexInfo {
-        let idx_layout = Arc::new(create_idx_layout(fldname, &tbl_schema));
+        let idx_layout = create_idx_layout(fldname, &tbl_schema);
         IndexInfo {
             idxname: idxname.to_string(),
             fldname: fldname.to_string(),

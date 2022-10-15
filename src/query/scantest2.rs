@@ -23,7 +23,7 @@ mod tests {
         let mut sch1 = Schema::new();
         sch1.add_int_field("A");
         sch1.add_string_field("B", 9);
-        let layout1 = Arc::new(Layout::new(Arc::new(sch1)));
+        let layout1 = Layout::new(Arc::new(sch1));
         let mut us1 = TableScan::new(tx.clone(), "T1", layout1.clone()).unwrap();
         us1.before_first().unwrap();
         let n = 200;
@@ -37,7 +37,7 @@ mod tests {
         let mut sch2 = Schema::new();
         sch2.add_int_field("C");
         sch2.add_string_field("D", 9);
-        let layout2 = Arc::new(Layout::new(Arc::new(sch2)));
+        let layout2 = Layout::new(Arc::new(sch2));
         let mut us2 = TableScan::new(tx.clone(), "T2", layout2.clone()).unwrap();
         us2.before_first().unwrap();
         for i in 0..n {

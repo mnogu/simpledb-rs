@@ -4,6 +4,7 @@ use crate::file::page::Page;
 
 use super::schema::Schema;
 
+#[derive(Clone)]
 pub struct Layout {
     schema: Arc<Schema>,
     offsets: HashMap<String, usize>,

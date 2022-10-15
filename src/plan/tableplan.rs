@@ -13,7 +13,7 @@ use super::plan::PlanControl;
 pub struct TablePlan {
     tblname: String,
     tx: Arc<Mutex<Transaction>>,
-    layout: Arc<Layout>,
+    layout: Layout,
     si: StatInfo,
 }
 
@@ -23,7 +23,7 @@ impl TablePlan {
         tblname: &str,
         md: Arc<Mutex<MetadataMgr>>,
     ) -> Result<TablePlan, TransactionError> {
-        let layout = Arc::new(md.lock().unwrap().get_layout(tblname, tx.clone())?);
+        let layout = md.lock().unwrap().get_layout(tblname, tx.clone())?;
         let si = md
             .lock()
             .unwrap()

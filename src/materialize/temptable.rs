@@ -11,7 +11,7 @@ use crate::{
 pub struct TempTable {
     tx: Arc<Mutex<Transaction>>,
     tblname: String,
-    layout: Arc<Layout>,
+    layout: Layout,
 }
 
 static NEXT_TABLE_NUM: AtomicUsize = AtomicUsize::new(0);
@@ -24,7 +24,7 @@ fn next_table_name() -> String {
 impl TempTable {
     pub fn new(tx: Arc<Mutex<Transaction>>, sch: Arc<Schema>) -> TempTable {
         let tblname = next_table_name();
-        let layout = Arc::new(Layout::new(sch));
+        let layout = Layout::new(sch);
         TempTable {
             tx,
             tblname,
@@ -40,7 +40,7 @@ impl TempTable {
         self.tblname.clone()
     }
 
-    pub fn get_layout(&self) -> Arc<Layout> {
+    pub fn get_layout(&self) -> Layout {
         self.layout.clone()
     }
 }

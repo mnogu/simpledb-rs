@@ -89,7 +89,7 @@ impl MetadataMgr {
     pub fn get_stat_info(
         &mut self,
         tblname: &str,
-        layout: Arc<Layout>,
+        layout: Layout,
         tx: Arc<Mutex<Transaction>>,
     ) -> Result<StatInfo, TransactionError> {
         self.statmgr

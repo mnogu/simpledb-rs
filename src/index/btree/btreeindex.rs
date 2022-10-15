@@ -17,8 +17,8 @@ use super::{btpage::BTPage, btreedir::BTreeDir, btreeleaf::BTreeLeaf};
 
 pub struct BTreeIndex {
     tx: Arc<Mutex<Transaction>>,
-    dir_layout: Arc<Layout>,
-    leaf_layout: Arc<Layout>,
+    dir_layout: Layout,
+    leaf_layout: Layout,
     leaftbl: String,
     leaf: Option<BTreeLeaf>,
     rootblk: BlockId,
@@ -28,7 +28,7 @@ impl BTreeIndex {
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         idxname: &str,
-        leaf_layout: Arc<Layout>,
+        leaf_layout: Layout,
     ) -> Result<BTreeIndex, TransactionError> {
         let leaftbl = format!("{}leaf", idxname);
         if tx.lock().unwrap().size(&leaftbl)? == 0 {
@@ -42,7 +42,7 @@ impl BTreeIndex {
         dirsch.add("dataval", &leaf_layout.schema());
         let dirsch = Arc::new(dirsch);
         let dirtbl = format!("{}dir", idxname);
-        let dir_layout = Arc::new(Layout::new(dirsch.clone()));
+        let dir_layout = Layout::new(dirsch.clone());
         let rootblk = BlockId::new(&dirtbl, 0);
         if tx.lock().unwrap().size(&dirtbl)? == 0 {
             tx.lock().unwrap().append(&dirtbl)?;

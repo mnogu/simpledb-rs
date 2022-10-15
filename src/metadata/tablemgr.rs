@@ -14,8 +14,8 @@ use crate::{
 };
 
 pub struct TableMgr {
-    tcat_layout: Arc<Layout>,
-    fcat_layout: Arc<Layout>,
+    tcat_layout: Layout,
+    fcat_layout: Layout,
 }
 
 impl TableMgr {
@@ -26,7 +26,7 @@ impl TableMgr {
         tcat_schema.add_string_field("tblname", TableMgr::MAX_NAME);
         tcat_schema.add_int_field("slotsize");
         let ts = Arc::new(tcat_schema);
-        let tcat_layout = Arc::new(Layout::new(ts.clone()));
+        let tcat_layout = Layout::new(ts.clone());
 
         let mut fcat_schema = Schema::new();
         fcat_schema.add_string_field("tblname", TableMgr::MAX_NAME);
@@ -35,7 +35,7 @@ impl TableMgr {
         fcat_schema.add_int_field("length");
         fcat_schema.add_int_field("offset");
         let fs = Arc::new(fcat_schema);
-        let fcat_layout = Arc::new(Layout::new(fs.clone()));
+        let fcat_layout = Layout::new(fs.clone());
 
         let tm = TableMgr {
             tcat_layout,

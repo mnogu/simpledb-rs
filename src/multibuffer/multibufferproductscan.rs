@@ -19,7 +19,7 @@ pub struct MultibufferProductScan {
     rhsscan: Option<Arc<Mutex<Scan>>>,
     prodscan: Option<Box<Scan>>,
     filename: String,
-    layout: Arc<Layout>,
+    layout: Layout,
     chunksize: usize,
     nextblknum: usize,
     filesize: usize,
@@ -30,7 +30,7 @@ impl MultibufferProductScan {
         tx: Arc<Mutex<Transaction>>,
         lhsscan: Scan,
         tblname: &str,
-        layout: Arc<Layout>,
+        layout: Layout,
     ) -> Result<MultibufferProductScan, TransactionError> {
         let filename = format!("{}.tbl", tblname);
         let filesize = tx.lock().unwrap().size(&filename)?;
