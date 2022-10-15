@@ -4,6 +4,7 @@ use crate::{record::schema::Schema, tx::transaction::TransactionError};
 
 use super::{constant::Constant, scan::ScanControl};
 
+#[derive(Clone)]
 pub struct Expression {
     val: Option<Constant>,
     fldname: Option<String>,

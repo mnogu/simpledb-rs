@@ -7,7 +7,7 @@ use super::parser::ObjectControl;
 pub struct ModifyData {
     tblname: String,
     fldname: String,
-    newval: Arc<Expression>,
+    newval: Expression,
     pred: Arc<Predicate>,
 }
 
@@ -16,7 +16,7 @@ impl ModifyData {
         ModifyData {
             tblname: tblname.to_string(),
             fldname: fldname.to_string(),
-            newval: Arc::new(newval),
+            newval,
             pred: Arc::new(pred),
         }
     }
@@ -29,7 +29,7 @@ impl ModifyData {
         self.fldname.clone()
     }
 
-    pub fn new_value(&self) -> Arc<Expression> {
+    pub fn new_value(&self) -> Expression {
         self.newval.clone()
     }
 

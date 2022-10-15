@@ -5,7 +5,7 @@ use crate::{plan::plan::Plan, record::schema::Schema, tx::transaction::Transacti
 use super::{constant::Constant, scan::Scan, term::Term};
 
 pub struct Predicate {
-    terms: Vec<Arc<Term>>,
+    terms: Vec<Term>,
 }
 
 impl fmt::Display for Predicate {
@@ -28,7 +28,7 @@ impl Predicate {
     }
 
     pub fn with_term(t: Term) -> Predicate {
-        let terms = vec![Arc::new(t)];
+        let terms = vec![t];
         Predicate { terms }
     }
 
