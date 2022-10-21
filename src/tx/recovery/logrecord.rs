@@ -20,9 +20,7 @@ pub enum Op {
 
 pub trait LogRecord {
     fn op(&self) -> Op;
-
     fn tx_number(&self) -> Option<usize>;
-
     fn undo(&self, tx: &mut Transaction) -> Result<(), TransactionError>;
 }
 
