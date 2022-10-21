@@ -16,7 +16,6 @@ pub struct IndexInfo {
     idxname: String,
     fldname: String,
     tx: Arc<Mutex<Transaction>>,
-    tbl_schema: Arc<Schema>,
     idx_layout: Layout,
     si: StatInfo,
 }
@@ -48,7 +47,6 @@ impl IndexInfo {
             idxname: idxname.to_string(),
             fldname: fldname.to_string(),
             tx,
-            tbl_schema,
             idx_layout,
             si,
         }
