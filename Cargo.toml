@@ -24,6 +24,7 @@ rand = "0.8.5"
 tonic = "0.8.0"
 tokio = { version = "1.20.1", features = ["rt-multi-thread"] }
 prost = "0.11.0"
+enum_dispatch = "0.3.8"
 
 [build-dependencies]
 tonic-build = { version = "0.8.0", features = ["prost"] }

@@ -1,3 +1,5 @@
+use enum_dispatch::enum_dispatch;
+
 use crate::{
     query::{constant::Constant, expression::Expression, predicate::Predicate, term::Term},
     record::schema::Schema,
@@ -9,8 +11,10 @@ use super::{
     insertdata::InsertData, lexer::Lexer, modifydata::ModifyData, querydata::QueryData,
 };
 
+#[enum_dispatch(Object)]
 pub trait ObjectControl {}
 
+#[enum_dispatch]
 pub enum Object {
     Insert(InsertData),
     Delete(DeleteData),
@@ -18,42 +22,6 @@ pub enum Object {
     CreateTable(CreateTableData),
     CreateView(CreateViewData),
     CreateIndex(CreateIndexData),
-}
-
-impl From<InsertData> for Object {
-    fn from(d: InsertData) -> Self {
-        Object::Insert(d)
-    }
-}
-
-impl From<DeleteData> for Object {
-    fn from(d: DeleteData) -> Self {
-        Object::Delete(d)
-    }
-}
-
-impl From<ModifyData> for Object {
-    fn from(d: ModifyData) -> Self {
-        Object::Modify(d)
-    }
-}
-
-impl From<CreateTableData> for Object {
-    fn from(d: CreateTableData) -> Self {
-        Object::CreateTable(d)
-    }
-}
-
-impl From<CreateViewData> for Object {
-    fn from(d: CreateViewData) -> Self {
-        Object::CreateView(d)
-    }
-}
-
-impl From<CreateIndexData> for Object {
-    fn from(d: CreateIndexData) -> Self {
-        Object::CreateIndex(d)
-    }
 }
 
 pub struct Parser {

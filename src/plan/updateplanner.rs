@@ -1,5 +1,7 @@
 use std::sync::{Arc, Mutex};
 
+use enum_dispatch::enum_dispatch;
+
 use crate::{
     index::planner::indexupdateplanner::IndexUpdatePlanner,
     parse::{
@@ -12,6 +14,7 @@ use crate::{
 
 use super::basicupdateplanner::BasicUpdatePlanner;
 
+#[enum_dispatch(UpdatePlanner)]
 pub trait UpdatePlannerControl {
     fn execute_insert(
         &self,
@@ -50,87 +53,8 @@ pub trait UpdatePlannerControl {
     ) -> Result<usize, TransactionError>;
 }
 
+#[enum_dispatch]
 pub enum UpdatePlanner {
     Basic(BasicUpdatePlanner),
     Index(IndexUpdatePlanner),
-}
-
-impl From<BasicUpdatePlanner> for UpdatePlanner {
-    fn from(p: BasicUpdatePlanner) -> Self {
-        UpdatePlanner::Basic(p)
-    }
-}
-
-impl From<IndexUpdatePlanner> for UpdatePlanner {
-    fn from(p: IndexUpdatePlanner) -> Self {
-        UpdatePlanner::Index(p)
-    }
-}
-
-impl UpdatePlannerControl for UpdatePlanner {
-    fn execute_insert(
-        &self,
-        data: &InsertData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError> {
-        match self {
-            UpdatePlanner::Basic(planner) => planner.execute_insert(data, tx),
-            UpdatePlanner::Index(planner) => planner.execute_insert(data, tx),
-        }
-    }
-
-    fn execute_delete(
-        &self,
-        data: &DeleteData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError> {
-        match self {
-            UpdatePlanner::Basic(planner) => planner.execute_delete(data, tx),
-            UpdatePlanner::Index(planner) => planner.execute_delete(data, tx),
-        }
-    }
-
-    fn execute_modify(
-        &self,
-        data: &ModifyData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError> {
-        match self {
-            UpdatePlanner::Basic(planner) => planner.execute_modify(data, tx),
-            UpdatePlanner::Index(planner) => planner.execute_modify(data, tx),
-        }
-    }
-
-    fn execute_create_table(
-        &self,
-        data: &CreateTableData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError> {
-        match self {
-            UpdatePlanner::Basic(planner) => planner.execute_create_table(data, tx),
-            UpdatePlanner::Index(planner) => planner.execute_create_table(data, tx),
-        }
-    }
-
-    fn execute_create_view(
-        &self,
-        data: &CreateViewData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError> {
-        match self {
-            UpdatePlanner::Basic(planner) => planner.execute_create_view(data, tx),
-            UpdatePlanner::Index(planner) => planner.execute_create_view(data, tx),
-        }
-    }
-
-    fn execute_create_index(
-        &self,
-        data: &CreateIndexData,
-        tx: Arc<Mutex<Transaction>>,
-    ) -> Result<usize, TransactionError> {
-        match self {
-            UpdatePlanner::Basic(planner) => planner.execute_create_index(data, tx),
-            UpdatePlanner::Index(planner) => planner.execute_create_index(data, tx),
-        }
-    }
 }

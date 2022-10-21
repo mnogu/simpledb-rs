@@ -1,3 +1,4 @@
+use enum_dispatch::enum_dispatch;
 use tonic::Status;
 
 use crate::{
@@ -56,32 +57,13 @@ impl From<tonic::transport::Error> for SQLError {
     }
 }
 
+#[enum_dispatch(Driver)]
 pub trait DriverControl {
     fn connect(&self, url: &str) -> Result<Connection, SQLError>;
 }
 
+#[enum_dispatch]
 pub enum Driver {
     Embedded(EmbeddedDriver),
     Network(NetworkDriver),
-}
-
-impl From<EmbeddedDriver> for Driver {
-    fn from(d: EmbeddedDriver) -> Self {
-        Driver::Embedded(d)
-    }
-}
-
-impl From<NetworkDriver> for Driver {
-    fn from(d: NetworkDriver) -> Self {
-        Driver::Network(d)
-    }
-}
-
-impl DriverControl for Driver {
-    fn connect(&self, url: &str) -> Result<Connection, SQLError> {
-        match self {
-            Driver::Embedded(d) => d.connect(url),
-            Driver::Network(d) => d.connect(url),
-        }
-    }
 }
