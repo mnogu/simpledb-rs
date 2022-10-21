@@ -1,6 +1,7 @@
 use crate::{
     buffer::buffermgr::AbortError,
     index::query::{indexjoinscan::IndexJoinScan, indexselectscan::IndexSelectScan},
+    materialize::sortscan::SortScan,
     multibuffer::{chunkscan::ChunkScan, multibufferproductscan::MultibufferProductScan},
     record::tablescan::TableScan,
     tx::transaction::TransactionError,
@@ -29,6 +30,7 @@ pub enum Scan {
     IndexJoin(IndexJoinScan),
     Chunk(ChunkScan),
     MultibufferProduct(MultibufferProductScan),
+    Sort(SortScan),
 }
 
 impl ScanControl for Scan {
@@ -42,6 +44,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.before_first(),
             Scan::Chunk(scan) => scan.before_first(),
             Scan::MultibufferProduct(scan) => scan.before_first(),
+            Scan::Sort(scan) => scan.before_first(),
         }
     }
 
@@ -55,6 +58,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.next(),
             Scan::Chunk(scan) => scan.next(),
             Scan::MultibufferProduct(scan) => scan.next(),
+            Scan::Sort(scan) => scan.next(),
         }
     }
 
@@ -68,6 +72,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.get_int(fldname),
             Scan::Chunk(scan) => scan.get_int(fldname),
             Scan::MultibufferProduct(scan) => scan.get_int(fldname),
+            Scan::Sort(scan) => scan.get_int(fldname),
         }
     }
 
@@ -81,6 +86,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.get_string(fldname),
             Scan::Chunk(scan) => scan.get_string(fldname),
             Scan::MultibufferProduct(scan) => scan.get_string(fldname),
+            Scan::Sort(scan) => scan.get_string(fldname),
         }
     }
 
@@ -94,6 +100,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.get_val(fldname),
             Scan::Chunk(scan) => scan.get_val(fldname),
             Scan::MultibufferProduct(scan) => scan.get_val(fldname),
+            Scan::Sort(scan) => scan.get_val(fldname),
         }
     }
 
@@ -107,6 +114,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.has_field(fldname),
             Scan::Chunk(scan) => scan.has_field(fldname),
             Scan::MultibufferProduct(scan) => scan.has_field(fldname),
+            Scan::Sort(scan) => scan.has_field(fldname),
         }
     }
 
@@ -120,6 +128,7 @@ impl ScanControl for Scan {
             Scan::IndexJoin(scan) => scan.close(),
             Scan::Chunk(scan) => scan.close(),
             Scan::MultibufferProduct(scan) => scan.close(),
+            Scan::Sort(scan) => scan.close(),
         }
     }
 }
@@ -169,5 +178,11 @@ impl From<ChunkScan> for Scan {
 impl From<MultibufferProductScan> for Scan {
     fn from(s: MultibufferProductScan) -> Self {
         Scan::MultibufferProduct(s)
+    }
+}
+
+impl From<SortScan> for Scan {
+    fn from(s: SortScan) -> Self {
+        Scan::Sort(s)
     }
 }

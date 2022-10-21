@@ -7,17 +7,11 @@ use super::{constant::Constant, selectscan::SelectScan};
 
 pub trait UpdateScanControl {
     fn set_val(&mut self, fldname: &str, val: Constant) -> Result<(), TransactionError>;
-
     fn set_int(&mut self, fldname: &str, val: i32) -> Result<(), TransactionError>;
-
     fn set_string(&mut self, fldname: &str, val: &str) -> Result<(), TransactionError>;
-
     fn insert(&mut self) -> Result<(), TransactionError>;
-
     fn delete(&mut self) -> Result<(), TransactionError>;
-
     fn get_rid(&self) -> Option<Rid>;
-
     fn move_to_rid(&mut self, rid: &Rid) -> Result<(), TransactionError>;
 }
 
@@ -74,5 +68,11 @@ impl UpdateScanControl for UpdateScan {
             UpdateScan::Select(scan) => scan.move_to_rid(rid),
             UpdateScan::Table(scan) => scan.move_to_rid(rid),
         }
+    }
+}
+
+impl From<TableScan> for UpdateScan {
+    fn from(s: TableScan) -> Self {
+        UpdateScan::Table(s)
     }
 }
