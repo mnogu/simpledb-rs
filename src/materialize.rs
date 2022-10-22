@@ -1,4 +1,11 @@
+pub mod aggregationfn;
+pub mod countfn;
+pub mod groupbyplan;
+pub mod groupbyscan;
+pub mod groupbytest;
+pub mod groupvalue;
 pub mod materializeplan;
+pub mod maxfn;
 pub mod recordcomparator;
 pub mod sortplan;
 pub mod sortscan;

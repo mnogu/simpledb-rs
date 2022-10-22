@@ -18,6 +18,7 @@ use super::{
     temptable::TempTable,
 };
 
+#[derive(Clone)]
 pub struct SortPlan {
     tx: Arc<Mutex<Transaction>>,
     p: Plan,
