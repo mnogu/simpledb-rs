@@ -19,8 +19,8 @@
 - [ ] JDBC Interfaces
   - [x] Uses [gRPC](https://grpc.io/) and [Protocol Buffers](https://developers.google.com/protocol-buffers) instead
 - [x] Indexing
-- [ ] Materialization and Sorting
-- [ ] Effective Buffer Utilization
+- [x] Materialization and Sorting
+- [x] Effective Buffer Utilization
 - [x] Query Optimization
 
 ## References
