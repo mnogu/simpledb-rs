@@ -21,7 +21,7 @@ use super::{
 #[derive(Clone)]
 pub struct SortPlan {
     tx: Arc<Mutex<Transaction>>,
-    p: Plan,
+    p: Box<Plan>,
     sch: Arc<Schema>,
     comp: RecordComparator,
 }
@@ -30,6 +30,7 @@ impl SortPlan {
     pub fn new(tx: Arc<Mutex<Transaction>>, p: Plan, sortfields: Vec<String>) -> SortPlan {
         let sch = p.schema();
         let comp = RecordComparator::new(sortfields);
+        let p = Box::new(p);
         SortPlan { tx, p, sch, comp }
     }
 
@@ -137,7 +138,7 @@ impl PlanControl for SortPlan {
     }
 
     fn blocks_accessed(&self) -> usize {
-        let mp = MaterializePlan::new(self.tx.clone(), self.p.clone());
+        let mp = MaterializePlan::new(self.tx.clone(), *self.p.clone());
         mp.blocks_accessed()
     }
 

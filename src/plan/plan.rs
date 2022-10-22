@@ -4,7 +4,10 @@ use enum_dispatch::enum_dispatch;
 
 use crate::{
     index::planner::{indexjoinplan::IndexJoinPlan, indexselectplan::IndexSelectPlan},
-    materialize::{groupbyplan::GroupByPlan, materializeplan::MaterializePlan},
+    materialize::{
+        groupbyplan::GroupByPlan, materializeplan::MaterializePlan, mergejoinplan::MergeJoinPlan,
+        sortplan::SortPlan,
+    },
     multibuffer::multibufferproductplan::MultibufferProductPlan,
     parse::badsyntaxerror::BadSyntaxError,
     query::scan::Scan,
@@ -56,5 +59,7 @@ pub enum Plan {
     IndexJoin(IndexJoinPlan),
     Materialize(MaterializePlan),
     MultibufferProduct(MultibufferProductPlan),
+    Sort(SortPlan),
     GroupBy(GroupByPlan),
+    MergeJoin(MergeJoinPlan),
 }

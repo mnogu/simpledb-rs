@@ -5,8 +5,8 @@ use std::{
 
 use crate::{
     buffer::buffermgr::AbortError,
-    query::{constant::Constant, scan::ScanControl},
-    record::tablescan::TableScan,
+    query::{constant::Constant, scan::ScanControl, updatescan::UpdateScanControl},
+    record::{rid::Rid, tablescan::TableScan},
     tx::transaction::TransactionError,
 };
 
@@ -19,6 +19,7 @@ pub struct SortScan {
     currentidx: Option<usize>,
     hasmore1: bool,
     hasmore2: bool,
+    savedposition: [Option<Rid>; 2],
 }
 
 impl SortScan {
@@ -49,6 +50,7 @@ impl SortScan {
             comp,
             hasmore1,
             hasmore2,
+            savedposition: [None, None],
         })
     }
 
@@ -64,6 +66,29 @@ impl SortScan {
             }
             _ => Err(TransactionError::General),
         }
+    }
+
+    pub fn save_position(&mut self) {
+        let rid1 = self.s1.lock().unwrap().get_rid();
+        let rid2 = match &self.s2 {
+            Some(s2) => s2.lock().unwrap().get_rid(),
+            _ => None,
+        };
+        self.savedposition = [rid1, rid2];
+    }
+
+    pub fn restore_position(&self) -> Result<(), TransactionError> {
+        let rid1 = self.savedposition[0].clone();
+        let rid2 = self.savedposition[1].clone();
+        if let Some(rid1) = &rid1 {
+            self.s1.lock().unwrap().move_to_rid(rid1)?;
+        }
+        if let Some(rid2) = &rid2 {
+            if let Some(s2) = &self.s2 {
+                s2.lock().unwrap().move_to_rid(rid2)?;
+            }
+        }
+        Ok(())
     }
 }
 

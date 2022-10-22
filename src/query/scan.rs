@@ -3,7 +3,7 @@ use enum_dispatch::enum_dispatch;
 use crate::{
     buffer::buffermgr::AbortError,
     index::query::{indexjoinscan::IndexJoinScan, indexselectscan::IndexSelectScan},
-    materialize::{groupbyscan::GroupByScan, sortscan::SortScan},
+    materialize::{groupbyscan::GroupByScan, mergejoinscan::MergeJoinScan, sortscan::SortScan},
     multibuffer::{chunkscan::ChunkScan, multibufferproductscan::MultibufferProductScan},
     record::tablescan::TableScan,
     tx::transaction::TransactionError,
@@ -36,4 +36,5 @@ pub enum Scan {
     MultibufferProduct(MultibufferProductScan),
     Sort(SortScan),
     GroupBy(GroupByScan),
+    MergeJoin(MergeJoinScan),
 }
