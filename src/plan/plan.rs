@@ -16,8 +16,8 @@ use crate::{
 };
 
 use super::{
-    productplan::ProductPlan, projectplan::ProjectPlan, selectplan::SelectPlan,
-    tableplan::TablePlan,
+    optimizedproductplan::OptimizedProductPlan, productplan::ProductPlan, projectplan::ProjectPlan,
+    selectplan::SelectPlan, tableplan::TablePlan,
 };
 
 #[derive(Debug)]
@@ -62,4 +62,5 @@ pub enum Plan {
     Sort(SortPlan),
     GroupBy(GroupByPlan),
     MergeJoin(MergeJoinPlan),
+    OptimizedProduct(OptimizedProductPlan),
 }
