@@ -20,6 +20,7 @@ pub struct BasicQueryPlanner {
 }
 
 impl BasicQueryPlanner {
+    #[allow(dead_code)]
     pub fn new(mdm: Arc<Mutex<MetadataMgr>>) -> BasicQueryPlanner {
         BasicQueryPlanner { mdm }
     }

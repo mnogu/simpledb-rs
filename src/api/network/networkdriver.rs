@@ -12,6 +12,7 @@ use super::networkconnection::NetworkConnection;
 pub struct NetworkDriver {}
 
 impl NetworkDriver {
+    #[allow(dead_code)]
     pub fn new() -> NetworkDriver {
         NetworkDriver {}
     }

@@ -138,6 +138,7 @@ impl BufferMgr {
         None
     }
 
+    #[allow(dead_code)]
     pub fn set_max_time(&mut self, max_time: u128) {
         self.max_time = max_time;
     }

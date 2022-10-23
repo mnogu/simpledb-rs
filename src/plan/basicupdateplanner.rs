@@ -26,6 +26,7 @@ pub struct BasicUpdatePlanner {
 }
 
 impl BasicUpdatePlanner {
+    #[allow(dead_code)]
     pub fn new(mdm: Arc<Mutex<MetadataMgr>>) -> BasicUpdatePlanner {
         BasicUpdatePlanner { mdm }
     }

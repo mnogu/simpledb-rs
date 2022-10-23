@@ -13,6 +13,7 @@ use super::embeddedconnection::EmbeddedConnection;
 pub struct EmbeddedDriver {}
 
 impl EmbeddedDriver {
+    #[allow(dead_code)]
     pub fn new() -> EmbeddedDriver {
         EmbeddedDriver {}
     }

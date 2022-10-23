@@ -23,6 +23,7 @@ pub struct HashIndex {
 impl HashIndex {
     const NUM_BUCKETS: usize = 100;
 
+    #[allow(dead_code)]
     pub fn new(tx: Arc<Mutex<Transaction>>, idxname: &str, layout: Layout) -> HashIndex {
         HashIndex {
             tx,
@@ -33,6 +34,7 @@ impl HashIndex {
         }
     }
 
+    #[allow(dead_code)]
     pub fn search_cost(numblocks: usize, _rpb: usize) -> usize {
         numblocks / HashIndex::NUM_BUCKETS
     }

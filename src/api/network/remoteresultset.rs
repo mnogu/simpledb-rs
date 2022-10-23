@@ -17,6 +17,7 @@ pub struct RemoteResultSet {
 }
 
 impl RemoteResultSet {
+    #[allow(dead_code)]
     pub fn new(rss: Arc<Mutex<HashMap<u64, EmbeddedResultSet>>>) -> RemoteResultSet {
         RemoteResultSet { rss }
     }

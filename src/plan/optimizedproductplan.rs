@@ -13,6 +13,7 @@ pub struct OptimizedProductPlan {
 }
 
 impl OptimizedProductPlan {
+    #[allow(dead_code)]
     pub fn new(p1: Plan, p2: Plan) -> OptimizedProductPlan {
         let prod1 = ProductPlan::new(p1.clone(), p2.clone());
         let prod2 = ProductPlan::new(p2, p1);

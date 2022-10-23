@@ -31,6 +31,7 @@ impl RemoteStatement {
         RemoteStatement { stmt, rss }
     }
 
+    #[allow(dead_code)]
     pub fn result_sets(&self) -> Arc<Mutex<HashMap<u64, EmbeddedResultSet>>> {
         self.rss.clone()
     }

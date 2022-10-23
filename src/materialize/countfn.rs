@@ -34,6 +34,7 @@ impl AggregationFnControl for CountFn {
 }
 
 impl CountFn {
+    #[allow(dead_code)]
     pub fn new(fldname: &str) -> CountFn {
         CountFn {
             fldname: fldname.to_string(),

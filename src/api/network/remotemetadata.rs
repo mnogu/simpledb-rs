@@ -24,6 +24,7 @@ pub struct RemoteMetaData {
 }
 
 impl RemoteMetaData {
+    #[allow(dead_code)]
     pub fn new(rss: Arc<Mutex<HashMap<u64, EmbeddedResultSet>>>) -> RemoteMetaData {
         RemoteMetaData { rss }
     }

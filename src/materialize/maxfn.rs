@@ -41,6 +41,7 @@ impl AggregationFnControl for MaxFn {
 }
 
 impl MaxFn {
+    #[allow(dead_code)]
     pub fn new(fldname: &str) -> MaxFn {
         MaxFn {
             fldname: fldname.to_string(),

@@ -55,6 +55,7 @@ impl PlanControl for MergeJoinPlan {
 }
 
 impl MergeJoinPlan {
+    #[allow(dead_code)]
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         p1: Plan,

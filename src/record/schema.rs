@@ -68,14 +68,17 @@ struct FieldInfo {
 }
 
 impl FieldInfo {
+    #[allow(dead_code)]
     fn new(type_: Type, length: usize) -> FieldInfo {
         FieldInfo { type_, length }
     }
 
+    #[allow(dead_code)]
     fn type_(&self) -> Type {
         self.type_
     }
 
+    #[allow(dead_code)]
     fn length(&self) -> usize {
         self.length
     }

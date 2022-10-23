@@ -64,6 +64,7 @@ impl SimpleDB {
         Transaction::new(self.fm.clone(), self.lm.clone(), self.bm.clone())
     }
 
+    #[allow(dead_code)]
     pub fn md_mgr(&self) -> Option<Arc<Mutex<MetadataMgr>>> {
         self.mdm.clone()
     }
@@ -72,14 +73,17 @@ impl SimpleDB {
         self.planner.clone()
     }
 
+    #[allow(dead_code)]
     pub fn file_mgr(&self) -> Arc<FileMgr> {
         self.fm.clone()
     }
 
+    #[allow(dead_code)]
     pub fn log_mgr(&mut self) -> Arc<Mutex<LogMgr>> {
         self.lm.clone()
     }
 
+    #[allow(dead_code)]
     pub fn buffer_mgr(&mut self) -> Arc<Mutex<BufferMgr>> {
         self.bm.clone()
     }

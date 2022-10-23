@@ -20,6 +20,7 @@ pub struct BetterQueryPlanner {
 }
 
 impl BetterQueryPlanner {
+    #[allow(dead_code)]
     pub fn new(mdm: Arc<Mutex<MetadataMgr>>) -> BetterQueryPlanner {
         BetterQueryPlanner { mdm }
     }

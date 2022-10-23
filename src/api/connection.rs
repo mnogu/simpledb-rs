@@ -54,6 +54,7 @@ impl ConnectionControl for Connection {
 }
 
 impl Connection {
+    #[allow(dead_code)]
     pub fn create_statement(&self) -> Statement {
         match self {
             Connection::Embedded(conn) => Statement::Embedded(EmbeddedStatement::new(conn.clone())),

@@ -52,6 +52,7 @@ impl PlanControl for GroupByPlan {
 }
 
 impl GroupByPlan {
+    #[allow(dead_code)]
     pub fn new(
         tx: Arc<Mutex<Transaction>>,
         p: Plan,

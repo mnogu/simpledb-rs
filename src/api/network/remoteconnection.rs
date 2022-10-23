@@ -19,11 +19,13 @@ pub struct RemoteConnection {
 }
 
 impl RemoteConnection {
+    #[allow(dead_code)]
     pub fn new(db: SimpleDB) -> Result<RemoteConnection, SQLError> {
         let conn = Arc::new(Mutex::new(EmbeddedConnection::new(db)?));
         Ok(RemoteConnection { conn })
     }
 
+    #[allow(dead_code)]
     pub fn create_statement(&self) -> RemoteStatement {
         RemoteStatement::new(self.conn.clone())
     }

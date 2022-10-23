@@ -16,6 +16,7 @@ pub struct NetworkStatement {
 }
 
 impl NetworkStatement {
+    #[allow(dead_code)]
     pub fn new(conn: Arc<Mutex<NetworkConnection>>) -> NetworkStatement {
         let client = StatementClient::new(conn.lock().unwrap().channel());
         NetworkStatement { conn, client }
