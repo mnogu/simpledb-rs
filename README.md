@@ -14,7 +14,7 @@
 % cargo run
     Finished dev [unoptimized + debuginfo] target(s) in 0.21s
      Running `target/debug/main`
-Connect> studentdb
+Connect> foo
 creating new database
 transaction 1 committed
 
