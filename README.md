@@ -9,10 +9,15 @@
 
 ## How to run
 
+```
+$ git clone https://github.com/mnogu/simpledb-rs.git
+$ cd simpledb-rs
+```
+
 ### Embedded
 
 ```
-% cargo run
+$ cargo run
     Finished dev [unoptimized + debuginfo] target(s) in 0.21s
      Running `target/debug/main`
 Connect> foo
@@ -37,7 +42,7 @@ transaction 4 committed
 ### Network
 
 ```
-% cargo run --bin server
+$ cargo run --bin server
     Finished dev [unoptimized + debuginfo] target(s) in 0.14s
      Running `target/debug/server`
 creating new database
@@ -45,7 +50,7 @@ transaction 1 committed
 ```
 
 ```
-% cargo run --bin client
+$ cargo run --bin client
     Finished dev [unoptimized + debuginfo] target(s) in 0.14s
      Running `target/debug/client`
 Connect> //[::1]
