@@ -4,7 +4,8 @@
 
 ## Requirements
 
-* `protoc` >= 3
+* [`cargo`](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+* [`protoc`](https://grpc.io/docs/protoc-installation/) >= 3
 
 ## How to run
 
