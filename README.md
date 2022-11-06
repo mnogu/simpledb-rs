@@ -50,9 +50,9 @@ transaction 1 committed
 ```
 
 ```
-$ cargo run --bin client
-    Finished dev [unoptimized + debuginfo] target(s) in 0.14s
-     Running `target/debug/client`
+$ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.13s
+     Running `target/debug/main`
 Connect> //[::1]
 
 SQL> create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)
